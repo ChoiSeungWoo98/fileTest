@@ -1,5 +1,7 @@
 package com.example.fileupload.file;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,9 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,8 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class FileController {
+    private final FileService fileService;
 
+    @ResponseBody
     @PostMapping("/excel/read")
     public String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException { // 2
@@ -47,15 +51,13 @@ public class FileController {
             Row row = worksheet.getRow(i);
 
             FileDTO data = new FileDTO();
-
-            data.setNum((int) row.getCell(0).getNumericCellValue());
-            data.setName(row.getCell(1).getStringCellValue());
-            data.setEmail(row.getCell(2).getStringCellValue());
+            data.setUserPhoneNum((int) row.getCell(0).getNumericCellValue());
+            data.setUserName(row.getCell(1).getStringCellValue());
+            data.setUserEmail(row.getCell(2).getStringCellValue());
 
             dataList.add(data);
         }
-
-
+//        fileService.excelUpload(dataList);
 
         model.addAttribute("datas", dataList); // 5
 

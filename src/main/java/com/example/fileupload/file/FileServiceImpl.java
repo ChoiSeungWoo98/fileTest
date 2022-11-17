@@ -1,6 +1,7 @@
 package com.example.fileupload.file;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,10 @@ import java.util.List;
 @Qualifier("file")
 @Primary
 public class FileServiceImpl implements FileService {
-    FileMapper fileMapper;
+    private final FileDAO fileDAO;
+
         @Override
         public void excelUpload(List<FileDTO> fileDTOS){
-            fileMapper.excelUpload(fileDTOS);
+            fileDAO.excelUpload(fileDTOS);
         }
 }
