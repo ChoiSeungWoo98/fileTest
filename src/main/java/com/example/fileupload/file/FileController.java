@@ -23,7 +23,6 @@ import java.util.List;
 public class FileController {
     private final FileService fileService;
 
-    @ResponseBody
     @PostMapping("/excel/read")
     public String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException { // 2
