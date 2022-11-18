@@ -20,10 +20,11 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/excel/*")
 public class FileController {
     private final FileService fileService;
 
-    @PostMapping("/excel/read")
+    @PostMapping("/read")
     public String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException { // 2
 
