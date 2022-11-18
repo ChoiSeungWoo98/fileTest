@@ -3,14 +3,14 @@
 <mapper namespace="com.example.fileupload.file.FileMapper">
 
     <insert id="excelUpload" parameterType="java.util.List">
-        INSERT INTO tbl_user
-        (user_phone_num, user_name, user_email)
+        INSERT INTO tbl_excelfile
+        (excelfile_phone_num, excelfile_name, excelfile_email)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (
-                #{item.userPhoneNum},
-                #{item.userName},
-                #{item.userEmail}
+                #{item.excelfilePhoneNum},
+                #{item.excelfileName},
+                #{item.excelfileEmail}
             )
         </foreach>
     </insert>

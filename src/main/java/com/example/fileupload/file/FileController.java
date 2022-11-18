@@ -51,13 +51,13 @@ public class FileController {
             Row row = worksheet.getRow(i);
 
             FileDTO data = new FileDTO();
-            data.setUserPhoneNum((int) row.getCell(0).getNumericCellValue());
-            data.setUserName(row.getCell(1).getStringCellValue());
-            data.setUserEmail(row.getCell(2).getStringCellValue());
+            data.setExcelfilePhoneNum((int) row.getCell(0).getNumericCellValue());
+            data.setExcelfileName(row.getCell(1).getStringCellValue());
+            data.setExcelfileEmail(row.getCell(2).getStringCellValue());
 
             dataList.add(data);
         }
-//        fileService.excelUpload(dataList);
+        fileService.excelUpload(dataList);
 
         model.addAttribute("datas", dataList); // 5
 
