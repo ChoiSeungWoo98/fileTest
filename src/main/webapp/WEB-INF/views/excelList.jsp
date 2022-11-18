@@ -1,5 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -15,13 +16,13 @@
         <th scope="col">이메일</th>
     </tr>
     </thead>
+    <c:forEach items="${datas}" var="datas" varStatus="data">
     <tbody>
-    <tr th:each="data : ${datas}" >
-        <td scope="row" th:text="${data.excelfilePhoneNum}"></td>
-        <td th:text="${data.excelfileName}"></td>
-        <td th:text="${data.excelfileEmail}"></td>
-    </tr>
+            <td>${datas.excelfilePhoneNum}</td>
+            <td>${datas.excelfileName}</td>
+            <td>${datas.excelfileEmail}</td>
     </tbody>
+    </c:forEach>
 </table>
 </body>
 </html>
