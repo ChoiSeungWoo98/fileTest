@@ -1,8 +1,20 @@
-#spring:
-##  mvc:
-##    view:
-##      prefix: /WEB-INF/views/
-##      suffix: .jsp
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+  datasource:
+    hikari:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://220.117.171.126/dev_ecard?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+      username: xehub
+      password: xef!@#123
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  config-location: classpath:config/config.xml
+
 ##  datasource:
 ##    driver-class-name: com.mysql.cj.jdbc.Driver
 ##    url: jdbc:log4jdbc:mysql://localhost:3306/tbl_user?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
