@@ -6,10 +6,16 @@ spring:
 
   datasource:
     hikari:
+#      driver-class-name: com.mysql.cj.jdbc.Driver
+#      jdbc-url: jdbc:mysql://220.117.171.126/dev_ecard?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+#      username: xehub
+#      password: xef!@#123
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://220.117.171.126/dev_ecard?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      username: xehub
-      password: xef!@#123
+      jdbc-url: jdbc:mysql://localhost:3306/excelFile?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      username: root
+      password: 1234
+server:
+  port: 8090
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -17,7 +23,7 @@ mybatis:
 
 ##  datasource:
 ##    driver-class-name: com.mysql.cj.jdbc.Driver
-##    url: jdbc:log4jdbc:mysql://localhost:3306/tbl_user?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+##    url: jdbc:log4jdbc:mysql://localhost:3306/excelFile?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
 ##    username: root
 ##    password: 1234
 #  datasource:
@@ -39,5 +45,3 @@ mybatis:
 #        prepStmtCacheSize: 250
 #        prepStmtCacheSqlLimit: 2048
 #        useServerPrepStmts: true
-#server:
-#  port: 8090

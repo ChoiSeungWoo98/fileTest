@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 </head>
 <body>
-<p>여기 jsp아님</p>
 <table class="table table-striped">
     <thead>
     <tr>
