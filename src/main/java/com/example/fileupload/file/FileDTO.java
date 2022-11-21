@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class FileDTO {
-   private Integer excelfilePhoneNum;
+   private String excelfilePhoneNum;
    private String excelfileName;
    private String excelfileEmail;
 }

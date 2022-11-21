@@ -4,18 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,6 +31,9 @@ public class FileController {
             throws IOException {
 //        엑셀의 모든 정보를 담기위한 리스트
         List<FileDTO> dataList = new ArrayList<>();
+
+//        전화번호를 담기위한 변수
+        String cellPN = null;
 
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -56,9 +61,13 @@ public class FileController {
 //            한 행씩 가져와 담고
             Row row = worksheet.getRow(i);
 
+//            가져온 데이터를 전화번호 형식으로 변환
+            row.getCell(0).setCellFormula(String.valueOf(worksheet.getRow(i).getCell(0)));
+            cellPN = convertTelNo("0"+row.getCell(0));
+
 //            FileDTO에 담고
             FileDTO data = new FileDTO();
-            data.setExcelfilePhoneNum((int) row.getCell(0).getNumericCellValue());
+            data.setExcelfilePhoneNum(cellPN);
             data.setExcelfileName(row.getCell(1).getStringCellValue());
             data.setExcelfileEmail(row.getCell(2).getStringCellValue());
 
@@ -79,5 +88,35 @@ public class FileController {
         return "excel";
     }
 
+    public static String convertTelNo(String src) {
+
+        String mobTelNo = src;
+
+        if (mobTelNo != null) {
+            // 일단 기존 - 전부 제거
+            mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
+
+            if (mobTelNo.length() == 11) {
+                // 010-1234-1234
+                mobTelNo = mobTelNo.substring(0, 3) + "-" + mobTelNo.substring(3, 7) + "-" + mobTelNo.substring(7);
+
+            } else if (mobTelNo.length() == 8) {
+                // 1588-1234
+                mobTelNo = mobTelNo.substring(0, 4) + "-" + mobTelNo.substring(4);
+            } else {
+                if (mobTelNo.startsWith("02")) {
+                    mobTelNo = mobTelNo.substring(0, 2) + "-" + mobTelNo.substring(2, 5) + "-" + mobTelNo.substring(5);
+                } else {
+                    mobTelNo = mobTelNo.substring(0, 3) + "-" + mobTelNo.substring(3, 6) + "-" + mobTelNo.substring(6);
+                }
+            }
+
+        }
+
+        return mobTelNo;
+    }
+
 
 }
+
+
