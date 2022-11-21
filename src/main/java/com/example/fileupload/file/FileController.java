@@ -1,10 +1,11 @@
 package com.example.fileupload.file;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/excel/*")
 public class FileController {
     private final FileService fileService;
@@ -30,7 +31,7 @@ public class FileController {
     public String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException {
 //        엑셀의 모든 정보를 담기위한 리스트
-        List<FileDTO> dataList = new ArrayList<>();
+        List<FileVO> dataList = new ArrayList<>();
 
 //        전화번호를 담기위한 변수
         String cellPN = null;
@@ -42,19 +43,14 @@ public class FileController {
             throw new IOException("엑셀파일만 업로드 해주세요.");
         }
 //        하나의 엑셀파일을 담는 용도
-        Workbook workbook = null;
+        Workbook workbook = extension.equals("xlsx")
+                ? new XSSFWorkbook(file.getInputStream())
+                : new HSSFWorkbook(file.getInputStream());
 
-        if (extension.equals("xlsx")) {
-//            엑셀 2007버전 이상 일때 XSSFWorkbook
-            workbook = new XSSFWorkbook(file.getInputStream());
-        } else if (extension.equals("xls")) {
-//            엑셀 97~03버전일때 HSSFWorkbook
-            workbook = new HSSFWorkbook(file.getInputStream());
-        }
-
-//        workbook안에 (엑셀)시트 생성
+//        workbook안에 (엑셀)시트 읽어옴
         Sheet worksheet = workbook.getSheetAt(0);
 
+        List<String> failedList = Collections.emptyList();
 //        행 개수 만큼 반복문을 돌려 데이터를 가져온다
         for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
 
@@ -65,8 +61,13 @@ public class FileController {
             row.getCell(0).setCellFormula(String.valueOf(worksheet.getRow(i).getCell(0)));
             cellPN = convertTelNo("0"+row.getCell(0));
 
+            if(cellPN.equals("failed")){
+                failedList.add(String.valueOf(i));
+                throw new IOException("전화번호 형식이 잘못 되었습니다.");
+            }
+
 //            FileDTO에 담고
-            FileDTO data = new FileDTO();
+            FileVO data = new FileVO();
             data.setExcelfilePhoneNum(cellPN);
             data.setExcelfileName(row.getCell(1).getStringCellValue());
             data.setExcelfileEmail(row.getCell(2).getStringCellValue());
@@ -88,6 +89,7 @@ public class FileController {
         return "excel";
     }
 
+
     public static String convertTelNo(String src) {
 
         String mobTelNo = src;
@@ -96,7 +98,9 @@ public class FileController {
             // 일단 기존 - 전부 제거
             mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
 
-            if (mobTelNo.length() == 11) {
+            if(mobTelNo.length() != 11 && mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9){
+                return "failed";
+            } else if (mobTelNo.length() == 11) {
                 // 010-1234-1234
                 mobTelNo = mobTelNo.substring(0, 3) + "-" + mobTelNo.substring(3, 7) + "-" + mobTelNo.substring(7);
 

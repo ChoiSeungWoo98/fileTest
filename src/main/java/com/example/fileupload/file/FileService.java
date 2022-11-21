@@ -6,5 +6,5 @@ import java.util.List;
 
 @Service
 public interface FileService {
-    public void excelUpload(List<FileDTO> fileDTOS);
+    public void excelUpload(List<FileVO> fileVOS);
 }

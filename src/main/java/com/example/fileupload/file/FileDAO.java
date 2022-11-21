@@ -10,5 +10,5 @@ import java.util.List;
 public class FileDAO {
     private final FileMapper fileMapper;
 
-    public void excelUpload(List<FileDTO> fileDTOS){ fileMapper.excelUpload(fileDTOS);}
+    public void excelUpload(List<FileVO> fileVOS){ fileMapper.excelUpload(fileVOS);}
 }

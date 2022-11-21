@@ -6,5 +6,5 @@ import java.util.List;
 
 @Mapper
 public interface FileMapper {
-    public void excelUpload(List<FileDTO> fileDTOS);
+    public void excelUpload(List<FileVO> fileVOS);
 }
