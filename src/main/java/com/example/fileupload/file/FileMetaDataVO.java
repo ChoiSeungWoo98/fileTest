@@ -5,11 +5,9 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class FileDataVO {
-    private String excelfiledatName;
+public class FileMetaDataVO {
     private String excelfiledataType;
+    private int excelfiledataTotal;
     private String excelfiledataUploadTime;
-    private String excelfiledataProcessingTime;
-    private String excelfiledataOperationStatus;
     private String excelfiledataResult;
 }

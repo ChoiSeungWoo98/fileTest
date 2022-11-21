@@ -38,6 +38,10 @@ dependencies {
 	implementation 'javax.servlet:jstl'
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+////	파일 메타데이터를 가져오기 위한 라이브러리
+//	implementation 'org.apache.tika:tika-core:2.6.0'
+//	implementation 'org.apache.tika:tika-parsers-standard-package:2.6.0'
 }
 
 tasks.named('test') {

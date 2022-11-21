@@ -15,4 +15,24 @@
         </foreach>
     </insert>
 
+    <insert id="excelDataUpload">
+        INSERT INTO tbl_excelfiledata
+        (excelfiledata_name, excelfiledata_type, excelfiledata_upload_time, excelfiledata_processing_time, excelfiledata_operation_status, excelfiledata_result)
+        VALUES(#{excelfiledatName}, #{excelfiledataType}, #{excelfiledataUploadTime}, #{excelfiledataProcessingTime}, #{excelfiledataOperationStatus}, #{excelfiledataResult});
+
+    </insert>
+
+    <select id="pkKeyCheck" parameterType="java.util.List" resultType="string">
+        SELECT excelfile_name
+        FROM tbl_excelfile
+        WHERE
+        <trim prefix="(" suffix=")" prefixOverrides="OR">
+            <foreach collection="list" item="item">
+                <trim prefix="OR">
+                    excelfile_phone_num = #{item.excelfilePhoneNum}
+                </trim>
+            </foreach>
+        </trim>
+    </select>
+
 </mapper>

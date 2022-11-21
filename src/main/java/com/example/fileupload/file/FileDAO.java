@@ -11,4 +11,6 @@ public class FileDAO {
     private final FileMapper fileMapper;
 
     public void excelUpload(List<FileVO> fileVOS){ fileMapper.excelUpload(fileVOS);}
+    public void excelDataUpload(FileDataVO fileDataVO){ fileMapper.excelDataUpload(fileDataVO);}
+    public String pkKeyCheck(List<FileVO> fileVOS){ return fileMapper.pkKeyCheck(fileVOS);}
 }

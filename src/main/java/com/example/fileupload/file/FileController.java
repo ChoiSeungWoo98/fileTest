@@ -1,6 +1,7 @@
 package com.example.fileupload.file;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -16,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/excel/*")
+@Slf4j
 public class FileController {
     private final FileService fileService;
 
@@ -33,6 +34,20 @@ public class FileController {
 //        엑셀의 모든 정보를 담기위한 리스트
         List<FileVO> dataList = new ArrayList<>();
 
+        //현재시각을 가져옴
+        Date now = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String nowTime = simpleDateFormat.format(now);
+
+//        파일의 데이터
+        FileDataVO fileDataVO = new FileDataVO();
+        String fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")+1);
+        fileDataVO.setExcelfiledatName(file.getOriginalFilename().substring(0,file.getOriginalFilename().lastIndexOf(".")));
+        fileDataVO.setExcelfiledataType(fileType);
+        fileDataVO.setExcelfiledataUploadTime(nowTime);
+        fileDataVO.setExcelfiledataOperationStatus("false");
+
+
 //        전화번호를 담기위한 변수
         String cellPN = null;
 
@@ -40,6 +55,8 @@ public class FileController {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if (!extension.equals("xlsx") && !extension.equals("xls")) {
+            fileDataVO.setExcelfiledataResult("실패.. 엑셀파일만 업로드 해주세요.");
+            fileService.excelDataUpload(fileDataVO);
             throw new IOException("엑셀파일만 업로드 해주세요.");
         }
 //        하나의 엑셀파일을 담는 용도
@@ -62,11 +79,12 @@ public class FileController {
             cellPN = convertTelNo("0"+row.getCell(0));
 
             if(cellPN.equals("failed")){
-                failedList.add(String.valueOf(i));
+                fileDataVO.setExcelfiledataResult("실패.."+i+"번째 정보에 전화번호 형식이 잘못 되었습니다.");
+                fileService.excelDataUpload(fileDataVO);
                 throw new IOException("전화번호 형식이 잘못 되었습니다.");
             }
 
-//            FileDTO에 담고
+//            FileVO에 담고
             FileVO data = new FileVO();
             data.setExcelfilePhoneNum(cellPN);
             data.setExcelfileName(row.getCell(1).getStringCellValue());
@@ -75,10 +93,26 @@ public class FileController {
 //            엑셀 전체 정보를 담을 list에 추가
             dataList.add(data);
         }
+
+        ArrayList<String> overLen = new ArrayList<>(Arrays.asList(fileService.pkKeyCheck(dataList)));
+
+        if (overLen.size() != 0){
+            fileDataVO.setExcelfiledataResult("실패.. 중복 데이터가 있습니다." + overLen);
+            fileService.excelDataUpload(fileDataVO);
+            throw new IOException("중복 데이터가 있습니다.");
+        }
 //        엑셀에서 받은 정보를 담은 list를 DB에 저장
         fileService.excelUpload(dataList);
 
         model.addAttribute("datas", dataList);
+
+//        처리된 시각
+        now = new Date();
+        nowTime = simpleDateFormat.format(now);
+        fileDataVO.setExcelfiledataProcessingTime(nowTime);
+        fileDataVO.setExcelfiledataOperationStatus("true");
+        fileDataVO.setExcelfiledataResult("성공");
+        fileService.excelDataUpload(fileDataVO);
 
         return "excelList";
 
