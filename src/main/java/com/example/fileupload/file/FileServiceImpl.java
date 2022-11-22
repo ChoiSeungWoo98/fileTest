@@ -21,5 +21,5 @@ public class FileServiceImpl implements FileService {
     public void excelDataUpload(FileDataVO fileDataVO) { fileDAO.excelDataUpload(fileDataVO); }
 
     @Override
-    public String pkKeyCheck(List<FileVO> fileVOS) { return fileDAO.pkKeyCheck(fileVOS); }
+    public String pkKeyCheck(FileVO fileVO) { return fileDAO.pkKeyCheck(fileVO); }
 }

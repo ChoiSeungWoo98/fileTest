@@ -18,7 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Controller
@@ -47,7 +49,6 @@ public class FileController {
         fileDataVO.setExcelfiledataUploadTime(nowTime);
         fileDataVO.setExcelfiledataOperationStatus("false");
 
-
 //        전화번호를 담기위한 변수
         String cellPN = null;
 
@@ -67,7 +68,7 @@ public class FileController {
 //        workbook안에 (엑셀)시트 읽어옴
         Sheet worksheet = workbook.getSheetAt(0);
 
-        List<String> failedList = Collections.emptyList();
+        ArrayList<String> overName = new ArrayList<>();
 //        행 개수 만큼 반복문을 돌려 데이터를 가져온다
         for (int i = 1; i < worksheet.getPhysicalNumberOfRows(); i++) {
 
@@ -90,14 +91,17 @@ public class FileController {
             data.setExcelfileName(row.getCell(1).getStringCellValue());
             data.setExcelfileEmail(row.getCell(2).getStringCellValue());
 
+            if(fileService.pkKeyCheck(data) != null){
+                overName.add(fileService.pkKeyCheck(data));
+            }
+
 //            엑셀 전체 정보를 담을 list에 추가
             dataList.add(data);
         }
 
-        ArrayList<String> overLen = new ArrayList<>(Arrays.asList(fileService.pkKeyCheck(dataList)));
 
-        if (overLen.size() != 0){
-            fileDataVO.setExcelfiledataResult("실패.. 중복 데이터가 있습니다." + overLen);
+        if (overName.size() != 0){
+            fileDataVO.setExcelfiledataResult("실패.. 중복 데이터가 있습니다." + overName);
             fileService.excelDataUpload(fileDataVO);
             throw new IOException("중복 데이터가 있습니다.");
         }

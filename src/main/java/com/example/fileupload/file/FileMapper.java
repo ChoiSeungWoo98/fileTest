@@ -8,5 +8,5 @@ import java.util.List;
 public interface FileMapper {
     public void excelUpload(List<FileVO> fileVOS);
     public void excelDataUpload(FileDataVO fileDataVO);
-    public String pkKeyCheck(List<FileVO> fileVOS);
+    public String pkKeyCheck(FileVO fileVO);
 }

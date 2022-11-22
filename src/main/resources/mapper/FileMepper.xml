@@ -22,17 +22,17 @@
 
     </insert>
 
-    <select id="pkKeyCheck" parameterType="java.util.List" resultType="string">
+    <select id="pkKeyCheck" parameterType="FileVO" resultType="string">
         SELECT excelfile_name
         FROM tbl_excelfile
-        WHERE
-        <trim prefix="(" suffix=")" prefixOverrides="OR">
-            <foreach collection="list" item="item">
-                <trim prefix="OR">
-                    excelfile_phone_num = #{item.excelfilePhoneNum}
-                </trim>
-            </foreach>
-        </trim>
+        WHERE excelfile_phone_num = #{excelfilePhoneNum}
+<!--        <trim prefix="(" suffix=")" prefixOverrides="OR">-->
+<!--            <foreach collection="list" item="item">-->
+<!--                <trim prefix="OR">-->
+<!--                    excelfile_phone_num = #{item.excelfilePhoneNum}-->
+<!--                </trim>-->
+<!--            </foreach>-->
+<!--        </trim>-->
     </select>
 
 </mapper>

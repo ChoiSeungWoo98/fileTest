@@ -10,5 +10,5 @@ public interface FileService {
 
     public void excelDataUpload(FileDataVO fileDataVO);
 
-    public String pkKeyCheck(List<FileVO> fileVOS);
+    public String pkKeyCheck(FileVO fileVO);
 }
