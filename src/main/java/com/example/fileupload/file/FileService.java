@@ -1,14 +1,12 @@
 package com.example.fileupload.file;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface FileService {
-    public void excelUpload(List<FileVO> fileVOS);
+    FileVO[] excelUpload(Workbook workbook, FileDataVO fileDataVO);
 
-    public void excelDataUpload(FileDataVO fileDataVO);
+    void excelDataUpload(FileDataVO fileDataVO);
 
-    public String pkKeyCheck(FileVO fileVO);
 }

@@ -18,7 +18,7 @@
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
         (excelfiledata_name, excelfiledata_type, excelfiledata_upload_time, excelfiledata_processing_time, excelfiledata_operation_status, excelfiledata_result)
-        VALUES(#{excelfiledatName}, #{excelfiledataType}, #{excelfiledataUploadTime}, #{excelfiledataProcessingTime}, #{excelfiledataOperationStatus}, #{excelfiledataResult});
+        VALUES(#{excelfiledataName}, #{excelfiledataType}, #{excelfiledataUploadTime}, #{excelfiledataProcessingTime}, #{excelfiledataOperationStatus}, #{excelfiledataResult});
 
     </insert>
 
@@ -26,13 +26,11 @@
         SELECT excelfile_name
         FROM tbl_excelfile
         WHERE excelfile_phone_num = #{excelfilePhoneNum}
-<!--        <trim prefix="(" suffix=")" prefixOverrides="OR">-->
-<!--            <foreach collection="list" item="item">-->
-<!--                <trim prefix="OR">-->
-<!--                    excelfile_phone_num = #{item.excelfilePhoneNum}-->
-<!--                </trim>-->
-<!--            </foreach>-->
-<!--        </trim>-->
+    </select>
+
+    <select id="showUser" resultType="FileVO">
+        SELECT *
+        FROM tbl_excelfile
     </select>
 
 </mapper>
