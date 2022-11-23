@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -19,14 +21,12 @@ public class FileServiceImpl implements FileService {
     private final FileMapper fileMapper;
     final int TEL_CEL_NUMBER = 0;
 
-//        @Override
-//        public void excelUpload(List<FileVO> fileVOS){ fileDAO.excelUpload(fileVOS); }
         @Override
         public FileVO[] excelUpload(Workbook workbook, FileDataVO fileDataVO){
-
             List<FileVO> dataList = new ArrayList<>();
             ArrayList<String> overName = new ArrayList<>();
             ArrayList<String> telNumFail = new ArrayList<>();
+            boolean fileUploadSecessed = true;
 
             workbook.getSheetAt(0).forEach( row -> {
                 row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
@@ -36,9 +36,9 @@ public class FileServiceImpl implements FileService {
                 if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
 
                 FileVO data = new FileVO();
-                data.setExcelfilePhoneNum(phoneNum);
-                data.setExcelfileName(row.getCell(1).getStringCellValue());
-                data.setExcelfileEmail(row.getCell(2).getStringCellValue());
+                data.setPhoneNum(phoneNum);
+                data.setName(row.getCell(1).getStringCellValue());
+                data.setEmail(row.getCell(2).getStringCellValue());
 
                 if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
 
@@ -47,21 +47,34 @@ public class FileServiceImpl implements FileService {
 
             try {
                 if(!telNumFail.isEmpty()){
-                    fileDataVO.setExcelfiledataResult("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
+                    fileUploadSecessed = false;
+                    fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("전화번호 형식이 잘못 되었습니다.");
                 }
                 if (!overName.isEmpty()){
-                    fileDataVO.setExcelfiledataResult("실패.. 중복 데이터가 있습니다." + overName);
+                    fileUploadSecessed = false;
+                    fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("중복 데이터가 있습니다.");
                 }
+                if(fileUploadSecessed){
+                    Date now = new Date();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String nowTime = simpleDateFormat.format(now);
+                    fileDataVO.setFileProcessedAt(nowTime);
+                    fileDataVO.setOperationStatus("true");
+                    fileDataVO.setConsequence("성공");
+                    fileMapper.excelDataUpload(fileDataVO);
+                }
+
+                fileMapper.excelUpload(dataList);
             } catch (DuplicateKeyException e) {
                 // ignore
             } catch (Exception e){
                 e.printStackTrace();
             }
-            fileMapper.excelUpload(dataList);
+
             return fileMapper.showUser(dataList);
         }
 

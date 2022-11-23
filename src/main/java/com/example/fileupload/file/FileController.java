@@ -28,27 +28,25 @@ public class FileController {
     @PostMapping("/read")
     private String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException {
-//        List<FileVO> dataList = new ArrayList<>();
-//
+
         Date now = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = simpleDateFormat.format(now);
-//
         String fileName = file.getOriginalFilename();
-//
+
 //        파일의 데이터
         FileDataVO fileDataVO = new FileDataVO();
         String fileType = fileName.substring(fileName.lastIndexOf(".")+1);
-        fileDataVO.setExcelfiledataName(fileName.substring(0,fileName.lastIndexOf(".")));
-        fileDataVO.setExcelfiledataType(fileType);
-        fileDataVO.setExcelfiledataUploadTime(nowTime);
-        fileDataVO.setExcelfiledataOperationStatus("false");
+        fileDataVO.setFileName(fileName.substring(0,fileName.lastIndexOf(".")));
+        fileDataVO.setFileType(fileType);
+        fileDataVO.setFileCreatedAt(nowTime);
+        fileDataVO.setOperationStatus("false");
 
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
         try {
             if (!extension.equals("xlsx") && !extension.equals("xls")) {
-                fileDataVO.setExcelfiledataResult("실패.. 엑셀파일만 업로드 해주세요.");
+                fileDataVO.setConsequence("실패.. 엑셀파일만 업로드 해주세요.");
                 fileService.excelDataUpload(fileDataVO);
                 throw new IOException("엑셀파일만 업로드 해주세요.");
             }
@@ -67,14 +65,6 @@ public class FileController {
 //        엑셀에서 받은 정보를 담은 list를 DB에 저장
         FileVO fileVO[] = fileService.excelUpload(workbook, fileDataVO);
         model.addAttribute("datas", fileVO);
-
-//        처리된 시각
-        now = new Date();
-        nowTime = simpleDateFormat.format(now);
-        fileDataVO.setExcelfiledataProcessingTime(nowTime);
-        fileDataVO.setExcelfiledataOperationStatus("true");
-        fileDataVO.setExcelfiledataResult("성공");
-        fileService.excelDataUpload(fileDataVO);
 
         return "excelList";
 

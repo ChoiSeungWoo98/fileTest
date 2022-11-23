@@ -12,7 +12,7 @@ public class Scheduler {
 
     @Scheduled(initialDelay = 10000, fixedDelay = 10000)
     public void scheduleTask() {
-        log.info("Fixed delay task - {}", System.currentTimeMillis() / 1000);
-        log.info("10초 후 실행 => time : " + LocalTime.now());
+//        log.info("Fixed delay task - {}", System.currentTimeMillis() / 1000);
+//        log.info("10초 후 실행 => time : " + LocalTime.now());
     }
 }

@@ -4,28 +4,28 @@
 
     <insert id="excelUpload" parameterType="java.util.List">
         INSERT INTO tbl_excelfile
-        (excelfile_phone_num, excelfile_name, excelfile_email)
+        (phone_num, name, email)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (
-                #{item.excelfilePhoneNum},
-                #{item.excelfileName},
-                #{item.excelfileEmail}
+                #{item.phoneNum},
+                #{item.name},
+                #{item.email}
             )
         </foreach>
     </insert>
 
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
-        (excelfiledata_name, excelfiledata_type, excelfiledata_upload_time, excelfiledata_processing_time, excelfiledata_operation_status, excelfiledata_result)
-        VALUES(#{excelfiledataName}, #{excelfiledataType}, #{excelfiledataUploadTime}, #{excelfiledataProcessingTime}, #{excelfiledataOperationStatus}, #{excelfiledataResult});
+        (file_name, file_type, file_created_at, file_processed_at, operation_status, consequence)
+        VALUES(#{fileName}, #{fileType}, #{fileCreatedAt}, #{fileProcessedAt}, #{operationStatus}, #{consequence});
 
     </insert>
 
     <select id="pkKeyCheck" parameterType="FileVO" resultType="string">
-        SELECT excelfile_name
+        SELECT name
         FROM tbl_excelfile
-        WHERE excelfile_phone_num = #{excelfilePhoneNum}
+        WHERE phone_num = #{phoneNum}
     </select>
 
     <select id="showUser" resultType="FileVO">
