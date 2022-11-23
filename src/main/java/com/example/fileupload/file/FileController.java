@@ -40,13 +40,15 @@ public class FileController {
         fileDataVO.setFileName(fileName.substring(0,fileName.lastIndexOf(".")));
         fileDataVO.setFileType(fileType);
         fileDataVO.setFileCreatedAt(nowTime);
-        fileDataVO.setOperationStatus("false");
+        fileDataVO.setOperationStatus("waiting");
+        fileService.excelDataUpload(fileDataVO);
 
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
         try {
             if (!extension.equals("xlsx") && !extension.equals("xls")) {
                 fileDataVO.setConsequence("실패.. 엑셀파일만 업로드 해주세요.");
+                fileDataVO.setOperationStatus("failed");
                 fileService.excelDataUpload(fileDataVO);
                 throw new IOException("엑셀파일만 업로드 해주세요.");
             }

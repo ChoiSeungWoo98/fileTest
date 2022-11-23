@@ -9,4 +9,6 @@ public interface FileService {
 
     void excelDataUpload(FileDataVO fileDataVO);
 
+    FileDataVO[] findForExcelData();
+
 }

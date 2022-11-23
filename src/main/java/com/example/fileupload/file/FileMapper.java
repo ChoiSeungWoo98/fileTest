@@ -10,4 +10,5 @@ public interface FileMapper {
     void excelDataUpload(FileDataVO fileDataVO);
     String pkKeyCheck(FileVO fileVO);
     FileVO[] showUser(List<FileVO> fileVOS);
+    FileDataVO[] findForExcelData();
 }

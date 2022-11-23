@@ -33,4 +33,10 @@
         FROM tbl_excelfile
     </select>
 
+    <select id="findForExcelData" resultType="FileDataVO">
+        SELECT *
+        FROM tbl_excelfiledata
+        WHERE operation_status = 'waiting' OR operation_status = 'failed'
+    </select>
+
 </mapper>

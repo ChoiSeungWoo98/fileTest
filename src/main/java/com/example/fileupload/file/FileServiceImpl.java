@@ -49,12 +49,14 @@ public class FileServiceImpl implements FileService {
                 if(!telNumFail.isEmpty()){
                     fileUploadSecessed = false;
                     fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
+                    fileDataVO.setOperationStatus("failed");
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("전화번호 형식이 잘못 되었습니다.");
                 }
                 if (!overName.isEmpty()){
                     fileUploadSecessed = false;
                     fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
+                    fileDataVO.setOperationStatus("failed");
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("중복 데이터가 있습니다.");
                 }
@@ -63,7 +65,7 @@ public class FileServiceImpl implements FileService {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String nowTime = simpleDateFormat.format(now);
                     fileDataVO.setFileProcessedAt(nowTime);
-                    fileDataVO.setOperationStatus("true");
+                    fileDataVO.setOperationStatus("sucessed");
                     fileDataVO.setConsequence("성공");
                     fileMapper.excelDataUpload(fileDataVO);
                 }
@@ -81,10 +83,8 @@ public class FileServiceImpl implements FileService {
     @Override
     public void excelDataUpload(FileDataVO fileDataVO) { fileMapper.excelDataUpload(fileDataVO); }
 
-
-
-
-
+    @Override
+    public FileDataVO[] findForExcelData() { return fileMapper.findForExcelData(); }
 
 
     private static String convertTelNo(String mobTelNo) {
