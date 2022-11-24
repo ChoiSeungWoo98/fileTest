@@ -12,4 +12,5 @@ public class FileDataVO {
     private String fileProcessedAt;
     private String operationStatus;
     private String consequence;
+    private String tempFileName;
 }

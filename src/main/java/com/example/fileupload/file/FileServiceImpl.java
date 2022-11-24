@@ -1,5 +1,7 @@
 package com.example.fileupload.file;
 
+import com.example.fileupload.temporaryFile.TemporaryFileDTO;
+import com.example.fileupload.temporaryFile.TemporaryFileVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,7 +28,7 @@ public class FileServiceImpl implements FileService {
             List<FileVO> dataList = new ArrayList<>();
             ArrayList<String> overName = new ArrayList<>();
             ArrayList<String> telNumFail = new ArrayList<>();
-            boolean fileUploadSecessed = true;
+            boolean fileUploadSucessed = true;
 
             workbook.getSheetAt(0).forEach( row -> {
                 row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
@@ -47,20 +49,20 @@ public class FileServiceImpl implements FileService {
 
             try {
                 if(!telNumFail.isEmpty()){
-                    fileUploadSecessed = false;
+                    fileUploadSucessed = false;
                     fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
                     fileDataVO.setOperationStatus("failed");
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("전화번호 형식이 잘못 되었습니다.");
                 }
                 if (!overName.isEmpty()){
-                    fileUploadSecessed = false;
+                    fileUploadSucessed = false;
                     fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
                     fileDataVO.setOperationStatus("failed");
                     fileMapper.excelDataUpload(fileDataVO);
                     throw new Exception("중복 데이터가 있습니다.");
                 }
-                if(fileUploadSecessed){
+                if(fileUploadSucessed){
                     Date now = new Date();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String nowTime = simpleDateFormat.format(now);
@@ -86,8 +88,15 @@ public class FileServiceImpl implements FileService {
     @Override
     public FileDataVO[] findForExcelData() { return fileMapper.findForExcelData(); }
 
+    @Override
+    public void createdTempFile(List<TemporaryFileVO> temporaryFileVOList) { fileMapper.createdTempFile(temporaryFileVOList); }
+    public String[] selectedTempFile() { return fileMapper.selectedTempFile(); }
 
-    private static String convertTelNo(String mobTelNo) {
+    @Override
+    public void excelDataConectedTemp(TemporaryFileDTO temporaryFileDTO) { fileMapper.excelDataConectedTemp(temporaryFileDTO);}
+
+
+    private String convertTelNo(String mobTelNo) {
         if (mobTelNo != null) {
             // 일단 기존 - 전부 제거
             mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");

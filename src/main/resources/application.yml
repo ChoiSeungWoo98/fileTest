@@ -3,6 +3,11 @@ spring:
     view:
       prefix: /WEB-INF/views/
       suffix: .jsp
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+      location: c:/temp
 
   datasource:
     hikari:
@@ -16,6 +21,12 @@ spring:
       password: 1234
 server:
   port: 8090
+
+logging:
+  level:
+    sql: OFF
+
+
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

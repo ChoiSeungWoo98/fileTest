@@ -6,7 +6,7 @@
         INSERT INTO tbl_excelfile
         (phone_num, name, email)
         VALUES
-        <foreach collection="list" item="item" separator=",">
+        <foreach collection="list" item="item">
             (
                 #{item.phoneNum},
                 #{item.name},
@@ -39,4 +39,26 @@
         WHERE operation_status = 'waiting' OR operation_status = 'failed'
     </select>
 
+    <insert id="createdTempFile" parameterType="java.util.List">
+        INSERT INTO tbl_tempfile
+        (temp_file_name, temp_file_status)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.tempFileName},
+            #{item.tempFileStatus}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectedTempFile" resultType="string">
+        SELECT temp_file_name
+        FROM tbl_tempfile
+    </select>
+
+    <update id="excelDataConectedTemp">
+        UPDATE tbl_excelfiledata
+        SET temp_file_name = #{tempFileName}
+        WHERE file_no = #{tempFileno}
+    </update>
 </mapper>

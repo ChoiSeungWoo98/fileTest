@@ -4,5 +4,7 @@
     <typeAliases>
         <typeAlias type="com.example.fileupload.file.FileVO" alias="FileVO"/>
         <typeAlias type="com.example.fileupload.file.FileDataVO" alias="FileDataVO"/>
+        <typeAlias type="com.example.fileupload.temporaryFile.TemporaryFileVO" alias="TemporaryFileVO"/>
+        <typeAlias type="com.example.fileupload.temporaryFile.TemporaryFileDTO" alias="TemporaryFileDTO"/>
     </typeAliases>
 </configuration>
