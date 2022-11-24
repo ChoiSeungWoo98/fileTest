@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService {
             fileDataVO.setTempFileName(fileName);
 
             workbook.getSheetAt(0).forEach( row -> {
-                if(row != null) {
+                try {
                     row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
                     String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
                     String phoneNum = convertTelNo(originalPhone);
@@ -47,6 +47,10 @@ public class FileServiceImpl implements FileService {
                     if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
 
                     dataList.add(data);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             });
 
