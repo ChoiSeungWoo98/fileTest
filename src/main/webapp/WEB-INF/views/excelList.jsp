@@ -18,9 +18,9 @@
     </thead>
     <c:forEach items="${datas}" var="datas" varStatus="data">
     <tbody>
-            <td>${datas.excelfilePhoneNum}</td>
-            <td>${datas.excelfileName}</td>
-            <td>${datas.excelfileEmail}</td>
+            <td>${datas.phoneNum}</td>
+            <td>${datas.name}</td>
+            <td>${datas.email}</td>
     </tbody>
     </c:forEach>
 </table>
