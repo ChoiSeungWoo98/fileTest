@@ -6,7 +6,7 @@
         INSERT INTO tbl_excelfile
         (phone_num, name, email)
         VALUES
-        <foreach collection="list" item="item">
+        <foreach collection="list" item="item" separator=",">
             (
                 #{item.phoneNum},
                 #{item.name},
@@ -19,7 +19,6 @@
         INSERT INTO tbl_excelfiledata
         (file_name, file_type, file_created_at, file_processed_at, operation_status, consequence)
         VALUES(#{fileName}, #{fileType}, #{fileCreatedAt}, #{fileProcessedAt}, #{operationStatus}, #{consequence});
-
     </insert>
 
     <select id="pkKeyCheck" parameterType="FileVO" resultType="string">
@@ -33,32 +32,33 @@
         FROM tbl_excelfile
     </select>
 
-    <select id="findForExcelData" resultType="FileDataVO">
-        SELECT *
-        FROM tbl_excelfiledata
-        WHERE operation_status = 'waiting' OR operation_status = 'failed'
-    </select>
-
-    <insert id="createdTempFile" parameterType="java.util.List">
-        INSERT INTO tbl_tempfile
-        (temp_file_name, temp_file_status)
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (
-            #{item.tempFileName},
-            #{item.tempFileStatus}
-            )
-        </foreach>
-    </insert>
+    <update id="tempFileNameAdd" parameterType="java.util.List">
+        UPDATE tbl_excelfiledata
+        SET temp_file_name = #{tempFileName}, temp_file_name_origin = #{tempFileNameOrigin}
+        WHERE file_name = #{tempFileNameOrigin} AND temp_file_name_origin IS NULL
+    </update>
 
     <select id="selectedTempFile" resultType="string">
         SELECT temp_file_name
-        FROM tbl_tempfile
+        FROM tbl_excelfiledata
     </select>
 
-    <update id="excelDataConectedTemp">
+    <select id="getWaitingTempFile" resultType="string">
+        SELECT temp_file_name
+        FROM tbl_excelfiledata
+        WHERE operation_status = 'waiting'
+    </select>
+
+    <select id="getFileOriginalNameAndType" resultType="string">
+        SELECT file_name, file_type
+        FROM tbl_excelfiledata
+        WHERE file_name = #{fileName} AND temp_file_name IS NULL
+    </select>
+
+    <update id="excelDataUpdate">
         UPDATE tbl_excelfiledata
-        SET temp_file_name = #{tempFileName}
-        WHERE file_no = #{tempFileno}
+        SET operation_status = #{operationStatus}, file_processed_at = #{fileProcessedAt}, consequence = #{consequence}
+        WHERE temp_file_name = #{tempFileName}
     </update>
+
 </mapper>

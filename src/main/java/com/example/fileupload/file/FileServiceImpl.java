@@ -1,7 +1,5 @@
 package com.example.fileupload.file;
 
-import com.example.fileupload.temporaryFile.TemporaryFileDTO;
-import com.example.fileupload.temporaryFile.TemporaryFileVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,27 +22,32 @@ public class FileServiceImpl implements FileService {
     final int TEL_CEL_NUMBER = 0;
 
         @Override
-        public FileVO[] excelUpload(Workbook workbook, FileDataVO fileDataVO){
+        public FileVO[] excelUpload(Workbook workbook, String fileName){
             List<FileVO> dataList = new ArrayList<>();
             ArrayList<String> overName = new ArrayList<>();
             ArrayList<String> telNumFail = new ArrayList<>();
+            FileDataVO fileDataVO = new FileDataVO();
             boolean fileUploadSucessed = true;
 
+            fileDataVO.setTempFileName(fileName);
+
             workbook.getSheetAt(0).forEach( row -> {
-                row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
-                String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
-                String phoneNum = convertTelNo(originalPhone);
+                if(row != null) {
+                    row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
+                    String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
+                    String phoneNum = convertTelNo(originalPhone);
 
-                if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
+                    if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
 
-                FileVO data = new FileVO();
-                data.setPhoneNum(phoneNum);
-                data.setName(row.getCell(1).getStringCellValue());
-                data.setEmail(row.getCell(2).getStringCellValue());
+                    FileVO data = new FileVO();
+                    data.setPhoneNum(phoneNum);
+                    data.setName(row.getCell(1).getStringCellValue());
+                    data.setEmail(row.getCell(2).getStringCellValue());
 
-                if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
+                    if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
 
-                dataList.add(data);
+                    dataList.add(data);
+                }
             });
 
             try {
@@ -52,14 +55,14 @@ public class FileServiceImpl implements FileService {
                     fileUploadSucessed = false;
                     fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
                     fileDataVO.setOperationStatus("failed");
-                    fileMapper.excelDataUpload(fileDataVO);
+                    fileMapper.excelDataUpdate(fileDataVO);
                     throw new Exception("전화번호 형식이 잘못 되었습니다.");
                 }
                 if (!overName.isEmpty()){
                     fileUploadSucessed = false;
                     fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
                     fileDataVO.setOperationStatus("failed");
-                    fileMapper.excelDataUpload(fileDataVO);
+                    fileMapper.excelDataUpdate(fileDataVO);
                     throw new Exception("중복 데이터가 있습니다.");
                 }
                 if(fileUploadSucessed){
@@ -69,9 +72,8 @@ public class FileServiceImpl implements FileService {
                     fileDataVO.setFileProcessedAt(nowTime);
                     fileDataVO.setOperationStatus("sucessed");
                     fileDataVO.setConsequence("성공");
-                    fileMapper.excelDataUpload(fileDataVO);
+                    fileMapper.excelDataUpdate(fileDataVO);
                 }
-
                 fileMapper.excelUpload(dataList);
             } catch (DuplicateKeyException e) {
                 // ignore
@@ -86,14 +88,14 @@ public class FileServiceImpl implements FileService {
     public void excelDataUpload(FileDataVO fileDataVO) { fileMapper.excelDataUpload(fileDataVO); }
 
     @Override
-    public FileDataVO[] findForExcelData() { return fileMapper.findForExcelData(); }
-
-    @Override
-    public void createdTempFile(List<TemporaryFileVO> temporaryFileVOList) { fileMapper.createdTempFile(temporaryFileVOList); }
+    public void tempFileNameAdd(FileDataVO fileDataVO) { fileMapper.tempFileNameAdd(fileDataVO); }
     public String[] selectedTempFile() { return fileMapper.selectedTempFile(); }
 
     @Override
-    public void excelDataConectedTemp(TemporaryFileDTO temporaryFileDTO) { fileMapper.excelDataConectedTemp(temporaryFileDTO);}
+    public String[] getWaitingTempFile() { return fileMapper.getWaitingTempFile(); }
+
+    @Override
+    public String getFileOriginalNameAndType(String fileName) { return fileMapper.getFileOriginalNameAndType(fileName); }
 
 
     private String convertTelNo(String mobTelNo) {

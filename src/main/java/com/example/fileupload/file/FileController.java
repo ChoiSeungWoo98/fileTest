@@ -1,8 +1,6 @@
 package com.example.fileupload.file;
 
 import com.example.fileupload.scheduler.Scheduler;
-import com.example.fileupload.temporaryFile.TemporaryFileDTO;
-import com.example.fileupload.temporaryFile.TemporaryFileVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -19,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,18 +34,15 @@ public class FileController {
         Date now = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = simpleDateFormat.format(now);
-
         String fileName = file.getOriginalFilename();
-
 
 //        파일의 데이터
         FileDataVO fileDataVO = new FileDataVO();
         String fileType = fileName.substring(fileName.lastIndexOf(".")+1);
-        fileDataVO.setFileName(fileName.substring(0,fileName.lastIndexOf(".")));
+        fileDataVO.setFileName(fileName);
         fileDataVO.setFileType(fileType);
         fileDataVO.setFileCreatedAt(nowTime);
         fileDataVO.setOperationStatus("waiting");
-
 
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
@@ -72,24 +66,15 @@ public class FileController {
                 ? new XSSFWorkbook(file.getInputStream())
                 : new HSSFWorkbook(file.getInputStream());
 
-        // 디비에 저장되어 있는 임시파일 정보
-        String[] tempFileNames = scheduler.temporaryFileGetName();
-        scheduler.temporaryFileInsert(tempFileNames);
-        tempFileNames = scheduler.temporaryFileGetName();
+//        여기서 파일 변환 후 업데이트하자
+        String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
+        Path uploadedFilePath = scheduler.rename(file, newFileName);
+        fileDataVO.setTempFileName(newFileName);
+        fileDataVO.setTempFileNameOrigin(fileName);
 
-//        List<TemporaryFileDTO> tempNos = new ArrayList<>();
-        for (String temp:tempFileNames) {
-            TemporaryFileDTO temporaryFileDTO = new TemporaryFileDTO();
-            temporaryFileDTO.setTempFileName(temp);
-            temporaryFileDTO.setTempFileno(Integer.parseInt(temp.substring(temp.lastIndexOf("_")+1, temp.lastIndexOf(".")))+1);
-            fileService.excelDataConectedTemp(temporaryFileDTO);
-//            tempNos.add(temporaryFileDTO);
-        }
-//        fileService.excelDataConectedTemp(tempNos);
+//        임시파일 정보 추가
+        fileService.tempFileNameAdd(fileDataVO);
 
-
-//        엑셀에서 받은 정보를 담은 list를 DB에 저장
-//        FileVO fileVO[] = fileService.excelUpload(workbook, fileDataVO);
 //        model.addAttribute("datas", fileVO);
 
         return "excelList";
