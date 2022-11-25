@@ -1,12 +1,11 @@
 package com.example.fileupload.file;
 
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface FileService {
-    FileVO[] excelUpload(Workbook workbook, String fileName);
+    FileVO[] excelUpload(String fileName);
 
     void excelDataUpload(FileDataVO fileDataVO);
 

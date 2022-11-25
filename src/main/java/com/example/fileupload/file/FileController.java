@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -23,8 +21,7 @@ import java.util.Date;
 public class FileController {
     private final FileService fileService;
     @PostMapping("/read")
-    private String readExcel(@RequestParam("file") MultipartFile file, Model model)
-            throws IOException {
+    private String readExcel(@RequestParam("file") MultipartFile file/*, Model model*/) {
         Date now = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String nowTime = simpleDateFormat.format(now);
@@ -50,20 +47,18 @@ public class FileController {
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
         try {
-            if (!extension.equals("xlsx") && !extension.equals("xls")) {
-                fileDataVO.setConsequence("실패.. 엑셀파일만 업로드 해주세요.");
+            if (extension.equals("xlsx") || extension.equals("xls") || extension.equals("csv")) {
+                fileService.excelDataUpload(fileDataVO);
+            } else {
+                fileDataVO.setConsequence("실패.. 엑셀파일 및 csv파일을 업로드 해주세요.");
                 fileDataVO.setOperationStatus("failed");
                 fileService.excelDataUpload(fileDataVO);
-                throw new Exception("엑셀파일만 업로드 해주세요.");
+                throw new Exception("엑셀파일 및 csv파일을 업로드 해주세요.");
             }
         }catch (DuplicateKeyException e){
             // ignore
         }catch (Exception e){
             e.printStackTrace();
-        }
-        if(fileDataVO.getOperationStatus().equals("waiting")){
-            fileService.excelDataUpload(fileDataVO);
-            //        하나의 엑셀파일을 담는 용도
         }
 
 //        여기서 파일 변환 후 업데이트하자
@@ -77,7 +72,6 @@ public class FileController {
         fileService.tempFileNameAdd(fileDataVO);
 
 //        model.addAttribute("datas", fileVO);
-
         return "excelList";
 
     }

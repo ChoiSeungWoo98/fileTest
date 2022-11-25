@@ -1,13 +1,19 @@
 package com.example.fileupload.file;
 
+import com.example.fileupload.polymorphism.Csv;
+import com.example.fileupload.polymorphism.Excel;
+import com.example.fileupload.polymorphism.FileParents;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.catalina.core.ApplicationContextFacade;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -19,49 +25,72 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Qualifier("file")
 @Primary
 public class FileServiceImpl implements FileService {
+
+    @Resource
+    ApplicationContext context;
+
     private final FileMapper fileMapper;
-    final int TEL_CEL_NUMBER = 0;
     private final String  DATA_DIRECTORY = "C:\\Temp";
 
         @Override
-        public FileVO[] excelUpload(Workbook workbook, String fileName){
-            List<FileVO> dataList = new ArrayList<>();
-            ArrayList<String> overName = new ArrayList<>();
-            ArrayList<String> telNumFail = new ArrayList<>();
+        public FileVO[] excelUpload(String tempFileName){
+            String fileType = FilenameUtils.getExtension(tempFileName);
             FileDataVO fileDataVO = new FileDataVO();
             boolean fileUploadSucessed = true;
+            FileParents fileParents = null;
 
-            fileDataVO.setTempFileName(fileName);
 
-            workbook.getSheetAt(0).forEach( row -> {
-                try {
-                    row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
-                    String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
-                    String phoneNum = convertTelNo(originalPhone);
+            if(fileType.equals("xlsx") || fileType.equals("xls")){
+                fileParents = new Excel(context.getBean(FileMapper.class));
+            }else if(fileType.equals("csv")) {
+                fileParents = new Csv();
+            }
+            if (fileParents == null) {
+                // 처리 불가능 타입
+            }
+            List<FileVO> dataList = fileParents.fileDataGet(tempFileName);
 
-                    if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
 
-                    FileVO data = new FileVO();
-                    data.setPhoneNum(phoneNum);
-                    data.setName(row.getCell(1).getStringCellValue());
-                    data.setEmail(row.getCell(2).getStringCellValue());
 
-                    if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
 
-                    dataList.add(data);
-                }catch (NullPointerException e){
-                    e.printStackTrace();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            });
+            fileDataVO.setTempFileName(tempFileName);
+
+//            String extension = FilenameUtils.getExtension(file);
+//            Workbook workbook = extension.equals("xlsx")
+//                    ? new XSSFWorkbook(fileInputStream)
+//                    : new HSSFWorkbook(fileInputStream);
+
+//            workbook.getSheetAt(0).forEach( row -> {
+//                try {
+//                    row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
+//                    String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
+////                    String phoneNum = convertTelNo(originalPhone);
+//
+////                    if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
+//
+//                    FileVO data = new FileVO();
+////                    data.setPhoneNum(phoneNum);
+//                    data.setName(row.getCell(1).getStringCellValue());
+//                    data.setEmail(row.getCell(2).getStringCellValue());
+//
+//                    if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
+//
+//                    dataList.add(data);
+//                }catch (NullPointerException e){
+//                    e.printStackTrace();
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            });
+
+//            중복전화번호랑 중복이름 확인해야함!!!!!
+//            csv파일 업로드시 오류 있음
 
             try {
                 if(!telNumFail.isEmpty()){
@@ -87,13 +116,15 @@ public class FileServiceImpl implements FileService {
                     fileDataVO.setConsequence("성공");
                     fileDataVO.setTotaldataCount(dataList.size());
                     fileMapper.excelDataUpdate(fileDataVO);
-                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
-                    if(deleteFile.exists()){
-//                        deleteFile.deleteOnExit();
-                        deleteFile.delete();
-                    }
+//                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
+//                    if(deleteFile.exists()){
+////                        deleteFile.deleteOnExit();
+//                        deleteFile.delete();
+//                    }
                 }
-                fileMapper.excelUpload(dataList);
+                if(dataList.size() != 0){
+                    fileMapper.excelUpload(dataList);
+                }
             } catch (DuplicateKeyException e) {
                 // ignore
             } catch (Exception e){
@@ -113,14 +144,6 @@ public class FileServiceImpl implements FileService {
 
 
 
-    private String convertTelNo(String mobTelNo) {
-        if (mobTelNo != null) {
-            // 일단 기존 - 전부 제거
-            mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
-            if(mobTelNo.length() != 11 && mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9){return "failed";}
-        }
-        return mobTelNo;
-    }
 
     public File[] allFileGet(String type){
         File dir = new File(DATA_DIRECTORY);

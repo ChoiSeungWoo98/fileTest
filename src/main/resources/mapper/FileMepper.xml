@@ -58,7 +58,10 @@
 
     <update id="excelDataUpdate">
         UPDATE tbl_excelfiledata
-        SET operation_status = #{operationStatus}, file_processed_at = #{fileProcessedAt}, consequence = #{consequence}, "data"_count = #{totaldataCount}
+        SET operation_status = #{operationStatus},
+            file_processed_at = #{fileProcessedAt},
+            consequence = #{consequence},
+            totaldata_count = #{totaldataCount}
         WHERE temp_file_name = #{tempFileName}
     </update>
 

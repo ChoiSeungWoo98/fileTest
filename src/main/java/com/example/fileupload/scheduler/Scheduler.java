@@ -4,28 +4,18 @@ import com.example.fileupload.file.FileService;
 import com.example.fileupload.file.FileVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.LocalTime;
-import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class Scheduler {
     private final FileService fileService;
-    private final String  DATA_DIRECTORY = "C:\\Temp";
-
     @Scheduled(fixedDelay = 5000)
-    private void scheduleTask() throws IOException {
+    private void scheduleTask() {
 //        String[] tempNames = getTempName();
 //        String[] waitingTempFile = fileService.getWaitingTempFile();
 //        log.info("----------------------------------------------------");
@@ -48,17 +38,18 @@ public class Scheduler {
         String[] waitingFile = fileService.getWaitingTempFile();
 
         for (String file: waitingFile) {
-            FileInputStream fileInputStream = new FileInputStream(DATA_DIRECTORY + File.separator + file);
+//            FileInputStream fileInputStream = new FileInputStream(DATA_DIRECTORY + File.separator + file);
 
-            String extension = FilenameUtils.getExtension(file);
-            Workbook workbook = extension.equals("xlsx")
-                    ? new XSSFWorkbook(fileInputStream)
-                    : new HSSFWorkbook(fileInputStream);
+//            String extension = FilenameUtils.getExtension(file);
+//            Workbook workbook = extension.equals("xlsx")
+//                    ? new XSSFWorkbook(fileInputStream)
+//                    : new HSSFWorkbook(fileInputStream);
+
+
+
+
 //        엑셀에서 받은 정보를 담은 list를 DB에 저장
-            FileVO[] fileVO = fileService.excelUpload(workbook, file);
-            log.info("---------------------------------------------------------------------------------------");
-            log.info(String.valueOf(Arrays.stream(fileVO).iterator().next()));
-            log.info("---------------------------------------------------------------------------------------");
+            FileVO[] fileVO = fileService.excelUpload(file);
 //            model.addAttribute("datas", fileVO);
         }
 
