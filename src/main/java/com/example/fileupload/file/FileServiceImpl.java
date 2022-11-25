@@ -6,7 +6,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +28,7 @@ import java.util.regex.Pattern;
 public class FileServiceImpl implements FileService {
     private final FileMapper fileMapper;
     final int TEL_CEL_NUMBER = 0;
+    private final String  DATA_DIRECTORY = "C:\\Temp";
 
         @Override
         public FileVO[] excelUpload(Workbook workbook, String fileName){
@@ -76,7 +85,13 @@ public class FileServiceImpl implements FileService {
                     fileDataVO.setFileProcessedAt(nowTime);
                     fileDataVO.setOperationStatus("sucessed");
                     fileDataVO.setConsequence("성공");
+                    fileDataVO.setTotaldataCount(dataList.size());
                     fileMapper.excelDataUpdate(fileDataVO);
+                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
+                    if(deleteFile.exists()){
+//                        deleteFile.deleteOnExit();
+                        deleteFile.delete();
+                    }
                 }
                 fileMapper.excelUpload(dataList);
             } catch (DuplicateKeyException e) {
@@ -84,22 +99,18 @@ public class FileServiceImpl implements FileService {
             } catch (Exception e){
                 e.printStackTrace();
             }
-
             return fileMapper.showUser(dataList);
         }
-
     @Override
     public void excelDataUpload(FileDataVO fileDataVO) { fileMapper.excelDataUpload(fileDataVO); }
-
     @Override
     public void tempFileNameAdd(FileDataVO fileDataVO) { fileMapper.tempFileNameAdd(fileDataVO); }
-    public String[] selectedTempFile() { return fileMapper.selectedTempFile(); }
-
     @Override
     public String[] getWaitingTempFile() { return fileMapper.getWaitingTempFile(); }
-
     @Override
     public String getFileOriginalNameAndType(String fileName) { return fileMapper.getFileOriginalNameAndType(fileName); }
+
+
 
 
     private String convertTelNo(String mobTelNo) {
@@ -109,5 +120,49 @@ public class FileServiceImpl implements FileService {
             if(mobTelNo.length() != 11 && mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9){return "failed";}
         }
         return mobTelNo;
+    }
+
+    public File[] allFileGet(String type){
+        File dir = new File(DATA_DIRECTORY);
+        FileFilter fileType = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().endsWith(type);
+            }
+        };
+        File[] filesType = dir.listFiles(fileType);
+        return filesType;
+    }
+
+    public void tempFileDelete(){
+        String type = "tmp";
+        File[] tempNames = allFileGet(type);
+        for(File tempFile : tempNames){
+            if(tempFile.exists()){
+                tempFile.delete();
+            }
+        }
+    }
+
+    public String rename(MultipartFile file, String fileName) {
+        String fileUrl = DATA_DIRECTORY + File.separator + fileName;
+        Path newFile = Paths.get(fileUrl);
+        try {
+            Files.copy(file.getInputStream(), newFile, StandardCopyOption.REPLACE_EXISTING);
+//            return newFile;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return fileName;
+    }
+
+    public void sucessFileDelete() {
+        String[] sucessFiles = fileMapper.getSucessFileDelete();
+        for (String sucessFile : sucessFiles) {
+            File file = new File(DATA_DIRECTORY+ File.separator + sucessFile);
+            file.delete();
+        }
     }
 }

@@ -17,8 +17,8 @@
 
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
-        (file_name, file_type, file_created_at, file_processed_at, operation_status, consequence)
-        VALUES(#{fileName}, #{fileType}, #{fileCreatedAt}, #{fileProcessedAt}, #{operationStatus}, #{consequence});
+        (company_Name, file_name, file_type, file_created_at, file_processed_at, file_size, uploader, operation_status, consequence)
+        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence})
     </insert>
 
     <select id="pkKeyCheck" parameterType="FileVO" resultType="string">
@@ -38,11 +38,6 @@
         WHERE file_name = #{tempFileNameOrigin} AND temp_file_name_origin IS NULL
     </update>
 
-    <select id="selectedTempFile" resultType="string">
-        SELECT temp_file_name
-        FROM tbl_excelfiledata
-    </select>
-
     <select id="getWaitingTempFile" resultType="string">
         SELECT temp_file_name
         FROM tbl_excelfiledata
@@ -55,9 +50,15 @@
         WHERE file_name = #{fileName} AND temp_file_name IS NULL
     </select>
 
+    <select id="getSucessFileDelete" resultType="string">
+        SELECT temp_file_name
+        FROM tbl_excelfiledata
+        WHERE operation_status = 'sucessed'
+    </select>
+
     <update id="excelDataUpdate">
         UPDATE tbl_excelfiledata
-        SET operation_status = #{operationStatus}, file_processed_at = #{fileProcessedAt}, consequence = #{consequence}
+        SET operation_status = #{operationStatus}, file_processed_at = #{fileProcessedAt}, consequence = #{consequence}, "data"_count = #{totaldataCount}
         WHERE temp_file_name = #{tempFileName}
     </update>
 

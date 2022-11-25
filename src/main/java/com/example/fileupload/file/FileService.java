@@ -2,6 +2,7 @@ package com.example.fileupload.file;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface FileService {
@@ -11,10 +12,15 @@ public interface FileService {
 
     void tempFileNameAdd(FileDataVO fileDataVO);
 
-    String[] selectedTempFile();
-
     String[] getWaitingTempFile();
 
     String getFileOriginalNameAndType(String fileName);
+
+    void tempFileDelete();
+
+    String rename(MultipartFile file, String fileName);
+
+    void sucessFileDelete();
+
 
 }

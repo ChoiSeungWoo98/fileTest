@@ -1,12 +1,8 @@
 package com.example.fileupload.file;
 
-import com.example.fileupload.scheduler.Scheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,7 +22,6 @@ import java.util.Date;
 @Slf4j
 public class FileController {
     private final FileService fileService;
-    private final Scheduler scheduler;
     @PostMapping("/read")
     private String readExcel(@RequestParam("file") MultipartFile file, Model model)
             throws IOException {
@@ -43,6 +37,15 @@ public class FileController {
         fileDataVO.setFileType(fileType);
         fileDataVO.setFileCreatedAt(nowTime);
         fileDataVO.setOperationStatus("waiting");
+//        로그인한 정보에 존재할 거 같음. 쿠키나 세션에서 가져와야함
+        fileDataVO.setCompanyName("AnyMan");
+        fileDataVO.setUploader("김애니");
+
+         if(file.getSize()/(1024*1024) > 1){
+            fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024*1024))+"MB");
+        } else if (file.getSize()/1024 > 1) {
+            fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024))+"KB");
+        }
 
 //        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
@@ -60,16 +63,14 @@ public class FileController {
         }
         if(fileDataVO.getOperationStatus().equals("waiting")){
             fileService.excelDataUpload(fileDataVO);
+            //        하나의 엑셀파일을 담는 용도
         }
-//        하나의 엑셀파일을 담는 용도
-        Workbook workbook = extension.equals("xlsx")
-                ? new XSSFWorkbook(file.getInputStream())
-                : new HSSFWorkbook(file.getInputStream());
 
 //        여기서 파일 변환 후 업데이트하자
         String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
-        Path uploadedFilePath = scheduler.rename(file, newFileName);
-        fileDataVO.setTempFileName(newFileName);
+//        Path uploadedFilePath = fileService.rename(file, newFileName);
+        String uploadName = fileService.rename(file, newFileName);
+        fileDataVO.setTempFileName(uploadName);
         fileDataVO.setTempFileNameOrigin(fileName);
 
 //        임시파일 정보 추가

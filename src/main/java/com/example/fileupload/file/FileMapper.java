@@ -11,8 +11,8 @@ public interface FileMapper {
     String pkKeyCheck(FileVO fileVO);
     FileVO[] showUser(List<FileVO> fileVOS);
     void tempFileNameAdd(FileDataVO fileDataVO);
-    String[] selectedTempFile();
     String[] getWaitingTempFile();
     void excelDataUpload(FileDataVO fileDataVO);
     String getFileOriginalNameAndType(String fileName);
+    String[] getSucessFileDelete();
 }
