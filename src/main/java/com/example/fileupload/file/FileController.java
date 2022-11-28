@@ -34,11 +34,9 @@ public class FileController {
             String nowTime = simpleDateFormat.format(now);
             String fileName = file.getOriginalFilename();
 
-//        파일의 데이터
             FileDataVO fileDataVO = new FileDataVO();
             String fileType = fileName.substring(fileName.lastIndexOf(".")+1);
-
-
+            
 //        이거는 파일을 구분하기 위함(임의로 랜덤으로 뽑게 만듦 추후에 바꿔야함)
             Random r = new Random();
             int ran = r.nextInt(4);
@@ -69,6 +67,12 @@ public class FileController {
             String extension = FilenameUtils.getExtension(fileName);
             try {
                 if (extension.equals("xlsx") || extension.equals("xls") || extension.equals("csv")) {
+                    //        여기서 파일 변환 후 업데이트하자
+                    String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
+                    String uploadName = fileService.rename(file, newFileName);
+
+                    fileDataVO.setTempFileName(uploadName);
+                    fileDataVO.setTempFileNameOrigin(fileName);
                     fileService.excelDataUpload(fileDataVO);
                 } else {
                     fileDataVO.setConsequence("실패.. 엑셀파일 및 csv파일을 업로드 해주세요.");
@@ -83,15 +87,10 @@ public class FileController {
             }
 
 
-//        여기서 파일 변환 후 업데이트하자
-            String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
-//        Path uploadedFilePath = fileService.rename(file, newFileName);
-            String uploadName = fileService.rename(file, newFileName);
-            fileDataVO.setTempFileName(uploadName);
-            fileDataVO.setTempFileNameOrigin(fileName);
+
 
 //        임시파일 정보 추가
-            fileService.tempFileNameAdd(fileDataVO);
+//            fileService.tempFileNameAdd(fileDataVO);
         });
 
 

@@ -38,16 +38,21 @@ public class Csv implements FileParents {
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
 
-                String phoneNum = convertTelNo(lineArr[0]);
-                if (phoneNum.equals("failed")){ telNumFail.add(phoneNum); }
+//                String phoneNum = convertTelNo(lineArr[0]);
+//                if (phoneNum.equals("failed")){ telNumFail.add(phoneNum); }
 
                 FileVO data = new FileVO();
-                data.setPhoneNum(phoneNum);
-                data.setName(lineArr[1]);
-                data.setEmail(lineArr[2]);
+                data.setCi(lineArr[0]);
+                data.setId(Integer.parseInt(lineArr[1]));
+                data.setWithdrewDatetime(lineArr[2]);
+                data.setIsServiceBlocked(Boolean.valueOf(lineArr[3]));
+                data.setIsActive(Boolean.valueOf(lineArr[4]));
+//                data.setPhoneNum(phoneNum);
+//                data.setName(lineArr[1]);
+//                data.setEmail(lineArr[2]);
 
-                String falsePhone = fileMapper.pkKeyCheck(data);
-                if(falsePhone != null){ overName.add(falsePhone); }
+                String overId = fileMapper.pkKeyCheck(data);
+                if(overId != null){ overName.add(overId); }
 
                 dataList.add(data);
             }
@@ -68,14 +73,14 @@ public class Csv implements FileParents {
         }
 
         try {
-            if(!telNumFail.isEmpty()){
-                fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
-                fileDataVO.setOperationStatus("failed");
-                fileDataVO.setTempFileName(tempFileName);
-                fileMapper.excelDataUpdate(fileDataVO);
-                dataList.clear();
-                throw new Exception("전화번호 형식이 잘못 되었습니다.");
-            }
+//            if(!telNumFail.isEmpty()){
+//                fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
+//                fileDataVO.setOperationStatus("failed");
+//                fileDataVO.setTempFileName(tempFileName);
+//                fileMapper.excelDataUpdate(fileDataVO);
+//                dataList.clear();
+//                throw new Exception("전화번호 형식이 잘못 되었습니다.");
+//            }
             if (!overName.isEmpty()){
                 fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
                 fileDataVO.setOperationStatus("failed");
@@ -91,14 +96,14 @@ public class Csv implements FileParents {
         return dataList;
     }
 
-    private String convertTelNo(String mobTelNo) {
-        if (mobTelNo != null) {
-            // 일단 기존 - 전부 제거
-            mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
-            if(mobTelNo.length() != 11 /*&& mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9*/){return "failed";}
-        }
-        return mobTelNo;
-    }
+//    private String convertTelNo(String mobTelNo) {
+//        if (mobTelNo != null) {
+//            // 일단 기존 - 전부 제거
+//            mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
+//            if(mobTelNo.length() != 11 /*&& mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9*/){return "failed";}
+//        }
+//        return mobTelNo;
+//    }
 
 
 

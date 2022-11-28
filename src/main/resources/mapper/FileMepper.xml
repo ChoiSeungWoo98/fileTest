@@ -3,33 +3,35 @@
 <mapper namespace="com.example.fileupload.file.FileMapper">
 
     <insert id="excelUpload" parameterType="java.util.List">
-        INSERT INTO tbl_excelfile
-        (phone_num, name, email)
+        INSERT INTO tbl_user
+        (id, ci, withdrew_datetime, is_service_blocked, is_active)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (
-                #{item.phoneNum},
-                #{item.name},
-                #{item.email}
+                #{item.id},
+                #{item.ci},
+                #{item.withdrewDatetime},
+                #{item.isServiceBlocked},
+                #{item.isActive}
             )
         </foreach>
     </insert>
 
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
-        (company_Name, file_name, file_type, file_division,file_created_at, file_processed_at, file_size, uploader, operation_status, consequence)
-        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileDivision},#{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence})
+        (company_Name, file_name, file_type, file_division,file_created_at, file_processed_at, file_size, uploader, operation_status, consequence, temp_file_name, temp_file_name_origin)
+        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileDivision},#{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence}, #{tempFileName}, #{tempFileNameOrigin})
     </insert>
 
     <select id="pkKeyCheck" parameterType="FileVO" resultType="string">
-        SELECT name
-        FROM tbl_excelfile
-        WHERE phone_num = #{phoneNum}
+        SELECT id
+        FROM tbl_user
+        WHERE id = #{id}
     </select>
 
     <select id="showUser" resultType="FileVO">
         SELECT *
-        FROM tbl_excelfile
+        FROM tbl_user
     </select>
 
     <update id="tempFileNameAdd" parameterType="java.util.List">

@@ -23,8 +23,8 @@ public class Scheduler {
             FileVO[] fileVO = fileService.excelUpload(file);
         }
 
-        fileService.tempFileDelete();
-        fileService.sucessFileDelete();
+//        fileService.tempFileDelete();
+//        fileService.sucessFileDelete();
         log.info("Fixed delay task - {}", System.currentTimeMillis() / 1000);
         log.info("5초 후 실행 => time : " + LocalTime.now());
 

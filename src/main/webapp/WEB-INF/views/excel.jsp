@@ -7,12 +7,13 @@
     <title>엑셀 업로드</title>
 </head>
 <body>
-    <form action="/excel/read" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
     <form name="fileForm" action="/excel/read" method="POST" enctype="multipart/form-data">
         <ul>
-            <li><input multiple="multiple" type="file" name="file" required="required"></li>
-            <li><input multiple="multiple" type="file" name="file" required="required"></li>
+            <li><input multiple="multiple" type="file" name="file"></li>
+<%--            <li><input multiple="multiple" type="file" name="file"></li>--%>
+<%--            <li><input multiple="multiple" type="file" name="file"></li>--%>
+<%--            <li><input multiple="multiple" type="file" name="file"></li>--%>
+<%--            <li><input multiple="multiple" type="file" name="file"></li>--%>
         </ul>
     <input type="submit" value="제출" />
     </form>
