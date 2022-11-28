@@ -34,17 +34,20 @@ public class FileController {
         fileDataVO.setFileType(fileType);
         fileDataVO.setFileCreatedAt(nowTime);
         fileDataVO.setOperationStatus("waiting");
+
 //        로그인한 정보에 존재할 거 같음. 쿠키나 세션에서 가져와야함
         fileDataVO.setCompanyName("AnyMan");
         fileDataVO.setUploader("김애니");
+         if(file.getSize()/(1024*1024) >= 1){
+             fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024.0*1024.0)*10.0)/10.0 + "MB");
+         } else if (file.getSize()/1024 >= 1) {
+             fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024.0)*100.0)/100.0 + "KB");
+         } else {
+             fileDataVO.setFileSize(Math.ceil(file.getSize())+"BYTE");
+         }
 
-         if(file.getSize()/(1024*1024) > 1){
-            fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024*1024))+"MB");
-        } else if (file.getSize()/1024 > 1) {
-            fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024))+"KB");
-        }
 
-//        확장자를 가져와 엑셀 파일인지 구분하기 위해 사용
+//        확장자를 가져와 파일을 구분하기 위해 사용
         String extension = FilenameUtils.getExtension(fileName);
         try {
             if (extension.equals("xlsx") || extension.equals("xls") || extension.equals("csv")) {
@@ -60,6 +63,7 @@ public class FileController {
         }catch (Exception e){
             e.printStackTrace();
         }
+
 
 //        여기서 파일 변환 후 업데이트하자
         String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;

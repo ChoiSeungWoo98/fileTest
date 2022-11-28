@@ -1,14 +1,12 @@
 package com.example.fileupload.polymorphism;
 
+import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
 import com.example.fileupload.file.FileVO;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,7 +19,6 @@ import java.util.regex.Pattern;
 
 @Service
 public class Excel implements FileParents {
-
     @Resource
     FileMapper fileMapper;
 
@@ -30,12 +27,12 @@ public class Excel implements FileParents {
         this.fileMapper = fileMapper;
     }
 
-
     @Override
     public List<FileVO> fileDataGet(String tempFileName)  {
         ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
         List<FileVO> dataList = new ArrayList<>();
+        FileDataVO fileDataVO = new FileDataVO();
 
         String extension = FilenameUtils.getExtension(tempFileName);
 
@@ -75,6 +72,26 @@ public class Excel implements FileParents {
             }
         });
 
+        try {
+            if(!telNumFail.isEmpty()){
+                fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
+                fileDataVO.setOperationStatus("failed");
+                fileDataVO.setTempFileName(tempFileName);
+                fileMapper.excelDataUpdate(fileDataVO);
+                dataList.clear();
+                throw new Exception("전화번호 형식이 잘못 되었습니다.");
+            }
+            if (!overName.isEmpty()){
+                fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
+                fileDataVO.setOperationStatus("failed");
+                fileDataVO.setTempFileName(tempFileName);
+                fileMapper.excelDataUpdate(fileDataVO);
+                dataList.clear();
+                throw new Exception("중복 데이터가 있습니다.");
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return dataList;
     }
 
@@ -82,7 +99,7 @@ public class Excel implements FileParents {
         if (mobTelNo != null) {
             // 일단 기존 - 전부 제거
             mobTelNo = mobTelNo.replaceAll(Pattern.quote("-"), "");
-            if(mobTelNo.length() != 11 && mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9){return "failed";}
+            if(mobTelNo.length() != 11 /*&& mobTelNo.length() != 8 && mobTelNo.length() != 10 && mobTelNo.length() != 9*/){return "failed";}
         }
         return mobTelNo;
     }

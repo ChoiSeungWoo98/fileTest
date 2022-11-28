@@ -4,7 +4,6 @@ import com.example.fileupload.polymorphism.Csv;
 import com.example.fileupload.polymorphism.Excel;
 import com.example.fileupload.polymorphism.FileParents;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.core.ApplicationContextFacade;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,72 +40,22 @@ public class FileServiceImpl implements FileService {
         public FileVO[] excelUpload(String tempFileName){
             String fileType = FilenameUtils.getExtension(tempFileName);
             FileDataVO fileDataVO = new FileDataVO();
-            boolean fileUploadSucessed = true;
             FileParents fileParents = null;
 
 
             if(fileType.equals("xlsx") || fileType.equals("xls")){
                 fileParents = new Excel(context.getBean(FileMapper.class));
             }else if(fileType.equals("csv")) {
-                fileParents = new Csv();
+                fileParents = new Csv(context.getBean(FileMapper.class));
             }
             if (fileParents == null) {
                 // 처리 불가능 타입
             }
             List<FileVO> dataList = fileParents.fileDataGet(tempFileName);
-
-
-
-
             fileDataVO.setTempFileName(tempFileName);
 
-//            String extension = FilenameUtils.getExtension(file);
-//            Workbook workbook = extension.equals("xlsx")
-//                    ? new XSSFWorkbook(fileInputStream)
-//                    : new HSSFWorkbook(fileInputStream);
-
-//            workbook.getSheetAt(0).forEach( row -> {
-//                try {
-//                    row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
-//                    String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);
-////                    String phoneNum = convertTelNo(originalPhone);
-//
-////                    if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
-//
-//                    FileVO data = new FileVO();
-////                    data.setPhoneNum(phoneNum);
-//                    data.setName(row.getCell(1).getStringCellValue());
-//                    data.setEmail(row.getCell(2).getStringCellValue());
-//
-//                    if(fileMapper.pkKeyCheck(data) != null){ overName.add(fileMapper.pkKeyCheck(data)); }
-//
-//                    dataList.add(data);
-//                }catch (NullPointerException e){
-//                    e.printStackTrace();
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            });
-
-//            중복전화번호랑 중복이름 확인해야함!!!!!
-//            csv파일 업로드시 오류 있음
-
             try {
-                if(!telNumFail.isEmpty()){
-                    fileUploadSucessed = false;
-                    fileDataVO.setConsequence("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
-                    fileDataVO.setOperationStatus("failed");
-                    fileMapper.excelDataUpdate(fileDataVO);
-                    throw new Exception("전화번호 형식이 잘못 되었습니다.");
-                }
-                if (!overName.isEmpty()){
-                    fileUploadSucessed = false;
-                    fileDataVO.setConsequence("실패.. 중복 데이터가 있습니다." + overName);
-                    fileDataVO.setOperationStatus("failed");
-                    fileMapper.excelDataUpdate(fileDataVO);
-                    throw new Exception("중복 데이터가 있습니다.");
-                }
-                if(fileUploadSucessed){
+                if(!dataList.isEmpty()){
                     Date now = new Date();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String nowTime = simpleDateFormat.format(now);
@@ -116,14 +64,12 @@ public class FileServiceImpl implements FileService {
                     fileDataVO.setConsequence("성공");
                     fileDataVO.setTotaldataCount(dataList.size());
                     fileMapper.excelDataUpdate(fileDataVO);
+                    fileMapper.excelUpload(dataList);
 //                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
 //                    if(deleteFile.exists()){
 ////                        deleteFile.deleteOnExit();
 //                        deleteFile.delete();
 //                    }
-                }
-                if(dataList.size() != 0){
-                    fileMapper.excelUpload(dataList);
                 }
             } catch (DuplicateKeyException e) {
                 // ignore
