@@ -8,7 +8,8 @@
 </head>
 <body>
     <form action="/excel/read" method="POST" enctype="multipart/form-data">
-    <input type="file" name="file">
+        <input type="file" name="file">
+        <input type="file" name="file">
     <input type="submit" value="제출" />
     </form>
 </body>

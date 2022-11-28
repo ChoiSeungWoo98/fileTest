@@ -17,8 +17,8 @@
 
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
-        (company_Name, file_name, file_type, file_created_at, file_processed_at, file_size, uploader, operation_status, consequence)
-        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence})
+        (company_Name, file_name, file_type, file_division,file_created_at, file_processed_at, file_size, uploader, operation_status, consequence)
+        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileDivision},#{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence})
     </insert>
 
     <select id="pkKeyCheck" parameterType="FileVO" resultType="string">

@@ -5,8 +5,8 @@ spring:
       suffix: .jsp
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 20MB
+#      max-file-size: 100MB
+#      max-request-size: 200MB
       location: c:/temp
 
   datasource:

@@ -9,6 +9,7 @@ public class FileDataVO {
     private String companyName;
     private String fileName;
     private String fileType;
+    private String fileDivision;
     private String fileCreatedAt;
     private String fileProcessedAt;
     private String fileSize;
