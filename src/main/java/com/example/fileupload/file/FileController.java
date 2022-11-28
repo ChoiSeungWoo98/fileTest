@@ -38,10 +38,11 @@ public class FileController {
 //        로그인한 정보에 존재할 거 같음. 쿠키나 세션에서 가져와야함
         fileDataVO.setCompanyName("AnyMan");
         fileDataVO.setUploader("김애니");
+
          if(file.getSize()/(1024*1024) >= 1){
              fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024.0*1024.0)*10.0)/10.0 + "MB");
          } else if (file.getSize()/1024 >= 1) {
-             fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024.0)*100.0)/100.0 + "KB");
+             fileDataVO.setFileSize(Math.ceil(file.getSize()/(1024.0)) + "KB");
          } else {
              fileDataVO.setFileSize(Math.ceil(file.getSize())+"BYTE");
          }

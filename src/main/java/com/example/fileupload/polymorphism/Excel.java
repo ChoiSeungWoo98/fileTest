@@ -65,7 +65,7 @@ public class Excel implements FileParents {
                 if(falsePhone != null){ overName.add(falsePhone); }
 
                 dataList.add(data);
-            }catch (NullPointerException e){
+            } catch (NullPointerException e){
                 e.printStackTrace();
             }catch (Exception e){
                 e.printStackTrace();

@@ -33,22 +33,23 @@ public class Csv implements FileParents {
         String line = "";
 
         try{
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(csv), "UTF-8"));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(csv), "euc-kr"));
+
             while ((line = br.readLine()) != null){
                 String[] lineArr = line.split(",");
 
                 String phoneNum = convertTelNo(lineArr[0]);
                 if (phoneNum.equals("failed")){ telNumFail.add(phoneNum); }
 
-                FileVO fileVO = new FileVO();
-                fileVO.setPhoneNum(phoneNum);
-                fileVO.setName(lineArr[1]);
-                fileVO.setEmail(lineArr[2]);
-                log.info("----------------------여기가 csv---------------------");
-                log.info(lineArr[0]);
-                log.info(phoneNum+" | "+lineArr[1]+" | "+lineArr[2]);
-                log.info("---------------------------------------------");
-                dataList.add(fileVO);
+                FileVO data = new FileVO();
+                data.setPhoneNum(phoneNum);
+                data.setName(lineArr[1]);
+                data.setEmail(lineArr[2]);
+
+                String falsePhone = fileMapper.pkKeyCheck(data);
+                if(falsePhone != null){ overName.add(falsePhone); }
+
+                dataList.add(data);
             }
         }catch (FileNotFoundException e){
             e.printStackTrace();
