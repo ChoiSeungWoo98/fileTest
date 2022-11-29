@@ -22,8 +22,8 @@ import java.util.Random;
 @RequestMapping("/excel/*")
 @Slf4j
 public class FileController {
-    enum fileDivisions{애니맨_회원, 헬퍼_전환, 헬퍼_정보, 미션_정보, 피드백_정보}
-//    enum fileDivisions{ANYMAN_MEMBER, HELPER_CONVERSION, HELPER_INFORMATION, MISSION_INFORMATION, FEEDBACK_INFORMATION}
+//    enum fileDivisions{애니맨_회원, 헬퍼_전환, 헬퍼_정보, 미션_정보, 피드백_정보}
+////    enum fileDivisions{ANYMAN_MEMBER, HELPER_CONVERSION, HELPER_INFORMATION, MISSION_INFORMATION, FEEDBACK_INFORMATION}
     private final FileService fileService;
     @PostMapping("/read")
     private String readExcel(/*@RequestParam("file") MultipartFile file*/MultipartHttpServletRequest mRequest) {
@@ -40,9 +40,9 @@ public class FileController {
 //        이거는 파일을 구분하기 위함(임의로 랜덤으로 뽑게 만듦 추후에 바꿔야함)
             Random r = new Random();
             int ran = r.nextInt(4);
-            fileDivisions fileDivision;
-            switch (ran){case 0: fileDivision = fileDivisions.애니맨_회원; break; case 1: fileDivision = fileDivisions.헬퍼_전환; break; case 2: fileDivision = fileDivisions.헬퍼_정보; break; case 3: fileDivision = fileDivisions.미션_정보; break; case 4: fileDivision = fileDivisions.피드백_정보; break; default: fileDivision = null;}
-            fileDataVO.setFileDivision(String.valueOf(fileDivision));
+//            fileDivisions fileDivision;
+//            switch (ran){case 0: fileDivision = fileDivisions.애니맨_회원; break; case 1: fileDivision = fileDivisions.헬퍼_전환; break; case 2: fileDivision = fileDivisions.헬퍼_정보; break; case 3: fileDivision = fileDivisions.미션_정보; break; case 4: fileDivision = fileDivisions.피드백_정보; break; default: fileDivision = null;}
+//            fileDataVO.setFileDivision(String.valueOf(fileDivision));
 
 
             fileDataVO.setFileName(fileName);
@@ -94,7 +94,7 @@ public class FileController {
         });
 
 
-//        model.addAttribute("datas", fileVO);
+//        model.addAttribute("datas", userVO);
         return "excelList";
 
     }

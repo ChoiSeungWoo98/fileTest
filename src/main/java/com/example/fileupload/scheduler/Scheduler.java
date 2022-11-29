@@ -1,7 +1,7 @@
 package com.example.fileupload.scheduler;
 
 import com.example.fileupload.file.FileService;
-import com.example.fileupload.file.FileVO;
+import com.example.fileupload.file.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,7 +20,7 @@ public class Scheduler {
 
         for (String file: waitingFile) {
 //        엑셀에서 받은 정보를 담은 list를 DB에 저장
-            FileVO[] fileVO = fileService.excelUpload(file);
+            UserVO[] userVOS = fileService.excelUpload(file);
         }
 
 //        fileService.tempFileDelete();

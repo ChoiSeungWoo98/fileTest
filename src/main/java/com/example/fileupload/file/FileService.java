@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public interface FileService {
-    FileVO[] excelUpload(String fileName);
+    UserVO[] excelUpload(String fileName);
 
     void excelDataUpload(FileDataVO fileDataVO);
 
