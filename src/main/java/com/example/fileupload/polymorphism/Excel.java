@@ -2,7 +2,7 @@ package com.example.fileupload.polymorphism;
 
 import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
-import com.example.fileupload.file.FileVO;
+import com.example.fileupload.file.UserVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -31,10 +30,10 @@ public class Excel implements FileParents {
     }
 
     @Override
-    public List<FileVO> fileDataGet(String tempFileName)  {
+    public List<UserVO> fileDataGet(String tempFileName)  {
         ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
-        List<FileVO> dataList = new ArrayList<>();
+        List<UserVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
 
         String extension = FilenameUtils.getExtension(tempFileName);
@@ -59,20 +58,20 @@ public class Excel implements FileParents {
 //                String phoneNum = convertTelNo(originalPhone);
 
 //                if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
-                FileVO data = new FileVO();
+                UserVO data = new UserVO();
                 if(!(row.getCell(0) == null)){
-                    data.setCi(row.getCell(0).getStringCellValue());
+                    data.setUserCi(row.getCell(0).getStringCellValue());
                 }
-                data.setId((int) row.getCell(1).getNumericCellValue());
+                data.setUserId((int) row.getCell(1).getNumericCellValue());
                 if(!(row.getCell(2) == null)){
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String cal = simpleDateFormat.format(row.getCell(2).getDateCellValue());
-                    data.setWithdrewDatetime(cal);
+                    data.setUserWithdrewDatetime(cal);
                 }
-                data.setIsServiceBlocked(row.getCell(3).getBooleanCellValue());
-                data.setIsActive(row.getCell(4).getBooleanCellValue());
+                data.setUserIsServiceBlocked(row.getCell(3).getBooleanCellValue());
+                data.setUserIsActive(row.getCell(4).getBooleanCellValue());
 
-                String overId = fileMapper.pkKeyCheck(data);
+                String overId = fileMapper.userKeyCheck(data);
                 if(overId != null){ overName.add(overId); }
 
                 dataList.add(data);

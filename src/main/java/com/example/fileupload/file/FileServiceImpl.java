@@ -37,7 +37,7 @@ public class FileServiceImpl implements FileService {
     private final String  DATA_DIRECTORY = "C:\\Temp";
 
         @Override
-        public FileVO[] excelUpload(String tempFileName){
+        public UserVO[] excelUpload(String tempFileName){
             String fileType = FilenameUtils.getExtension(tempFileName);
             FileDataVO fileDataVO = new FileDataVO();
             FileParents fileParents = null;
@@ -51,7 +51,7 @@ public class FileServiceImpl implements FileService {
             if (fileParents == null) {
                 // 처리 불가능 타입
             }
-            List<FileVO> dataList = fileParents.fileDataGet(tempFileName);
+            List<UserVO> dataList = fileParents.fileDataGet(tempFileName);
             fileDataVO.setTempFileName(tempFileName);
 
             try {

@@ -2,14 +2,13 @@ package com.example.fileupload.polymorphism;
 
 import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
-import com.example.fileupload.file.FileVO;
+import com.example.fileupload.file.UserVO;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 @Slf4j
 public class Csv implements FileParents {
     @Resource
@@ -21,9 +20,9 @@ public class Csv implements FileParents {
     }
 
     @Override
-    public List<FileVO> fileDataGet(String tempFileName) {
+    public List<UserVO> fileDataGet(String tempFileName) {
         //반환용 리스트
-        List<FileVO> dataList = new ArrayList<>();
+        List<UserVO> dataList = new ArrayList<>();
         ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
@@ -41,17 +40,17 @@ public class Csv implements FileParents {
 //                String phoneNum = convertTelNo(lineArr[0]);
 //                if (phoneNum.equals("failed")){ telNumFail.add(phoneNum); }
 
-                FileVO data = new FileVO();
-                data.setCi(lineArr[0]);
-                data.setId(Integer.parseInt(lineArr[1]));
-                data.setWithdrewDatetime(lineArr[2]);
-                data.setIsServiceBlocked(Boolean.valueOf(lineArr[3]));
-                data.setIsActive(Boolean.valueOf(lineArr[4]));
+                UserVO data = new UserVO();
+                data.setUserCi(lineArr[0]);
+                data.setUserId(Integer.parseInt(lineArr[1]));
+                data.setUserWithdrewDatetime(lineArr[2]);
+                data.setUserIsServiceBlocked(Boolean.valueOf(lineArr[3]));
+                data.setUserIsActive(Boolean.valueOf(lineArr[4]));
 //                data.setPhoneNum(phoneNum);
 //                data.setName(lineArr[1]);
 //                data.setEmail(lineArr[2]);
 
-                String overId = fileMapper.pkKeyCheck(data);
+                String overId = fileMapper.userKeyCheck(data);
                 if(overId != null){ overName.add(overId); }
 
                 dataList.add(data);
