@@ -17,10 +17,100 @@
         </foreach>
     </insert>
 
+    <insert id="helperUpload" parameterType="java.util.List">
+        INSERT INTO tbl_helper
+        (helper_id, helper_user_id, helper_ci, helper_name, helper_mobile, helper_dob, helper_gender,
+         helper_accepted_datetime, helper_withdrew_datetime, helper_is_service_blocked, helper_is_active)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.helperId},
+                #{item.helperUserId},
+                #{item.helperCi},
+                #{item.helperName},
+                #{item.helperMoblie},
+                #{item.helperDob},
+                #{item.helperGender},
+                #{item.helperAcceptedDatetime},
+                #{item.helperWithdrewDatetime},
+                #{item.helperIsServiceBlocked},
+                #{item.helperIsActive}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="helperAnymanUpload" parameterType="java.util.List">
+        INSERT INTO tbl_helper_anyman_info
+        (helper_anyman_helper_id, helper_anyman_ci, helper_anyman_user_id, helper_anyman_username,
+         helper_anyman_profile_photo, helper_anyman_licenses, helper_anyman_experience)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.helperAnymanHelperId},
+                #{item.helperAnymanCi},
+                #{item.helperAnymanUserId},
+                #{item.helperAnymanUserName},
+                #{item.helperAnymanProfilePhoto},
+                #{item.helperAnymanLicenses},
+                #{item.helperAnymanExperience}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="missionUpload" parameterType="java.util.List">
+        INSERT INTO tbl_mission_info
+        (mission_user_id, mission_id, mission_user_ci, mission_created_datetime, mission_saved_state, mission_type,
+         mission_template, mission_content, mission_stopover, mission_destination, mission_completed_datetime, mission_bid_id,
+         mission_helper_ci, mission_helper_id, mission_bid_amount, mission_fee)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.missionUserId},
+                #{item.missionId},
+                #{item.missionUserCi},
+                #{item.missionCreatedDatetime},
+                #{item.missionSavedState},
+                #{item.missionType},
+                #{item.missionTemplate},
+                #{item.missionContent},
+                #{item.missionStopover},
+                #{item.missionDestination},
+                #{item.missionCompletedDatetime},
+                #{item.missionBidId},
+                #{item.missionHelperCi},
+                #{item.missionHelperId},
+                #{item.missionBidAmount},
+                #{item.missionFee}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="reviewUpload" parameterType="java.util.List">
+        INSERT INTO tbl_review_info
+        (review_helper_id, review_helper_ci, review_bid_id, review_mission_type, review_mission_template,
+         review_manner_score, review_perf_score, review_content, review_created_datetime)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.reviewHelperId},
+                #{item.reviewHelperCi},
+                #{item.reviewBidId},
+                #{item.reviewMissionType},
+                #{item.reviewMissionTemplate},
+                #{item.reviewMannerScore},
+                #{item.reviewPerfScore},
+                #{item.reviewContent},
+                #{item.reviewCreatedDatetime}
+            )
+        </foreach>
+    </insert>
+
     <insert id="excelDataUpload">
         INSERT INTO tbl_excelfiledata
-        (company_Name, file_name, file_type, file_division,file_created_at, file_processed_at, file_size, uploader, operation_status, consequence, temp_file_name, temp_file_name_origin)
-        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileDivision},#{fileCreatedAt}, #{fileProcessedAt}, #{fileSize}, #{uploader}, #{operationStatus}, #{consequence}, #{tempFileName}, #{tempFileNameOrigin})
+        (company_Name, file_name, file_type, file_division,file_created_at, file_processed_at,
+         file_size, uploader, operation_status, consequence, temp_file_name, temp_file_name_origin)
+        VALUES(#{companyName}, #{fileName}, #{fileType}, #{fileDivision},#{fileCreatedAt}, #{fileProcessedAt},
+               #{fileSize}, #{uploader}, #{operationStatus}, #{consequence}, #{tempFileName}, #{tempFileNameOrigin})
     </insert>
 
     <select id="userKeyCheck" parameterType="UserVO" resultType="string">
@@ -29,11 +119,28 @@
         WHERE user_id = #{userId}
     </select>
 
+
     <select id="helperKeyCheck" parameterType="HelperVO" resultType="string">
         SELECT helper_id
         FROM tbl_helper
         WHERE helper_id = #{helperId}
     </select>
+    <select id="helperAnymanKeyCheck" parameterType="HelperAnymanInfoVO" resultType="string">
+        SELECT helper_anyman_helper_id
+        FROM tbl_helper_anyman_info
+        WHERE helper_anyman_helper_id = #{helperAnymanHelperId}
+    </select>
+    <select id="missionKeyCheck" parameterType="MissionInfoVO" resultType="string">
+        SELECT mission_user_id
+        FROM tbl_mission_info
+        WHERE mission_user_id = #{missionUserId}
+    </select>
+    <select id="reviewKeyCheck" parameterType="ReviewInfoVO" resultType="string">
+        SELECT review_helper_id
+        FROM tbl_review_info
+        WHERE review_helper_id = #{reviewHelperId}
+    </select>
+
 
     <select id="showUser" resultType="UserVO">
         SELECT *
@@ -69,7 +176,8 @@
         SET operation_status = #{operationStatus},
             file_processed_at = #{fileProcessedAt},
             consequence = #{consequence},
-            totaldata_count = #{totaldataCount}
+            totaldata_count = #{totaldataCount},
+            file_division = #{fileDivision}
         WHERE temp_file_name = #{tempFileName}
     </update>
 

@@ -65,10 +65,10 @@ public class FileController {
 
 //        확장자를 가져와 파일을 구분하기 위해 사용
             String extension = FilenameUtils.getExtension(fileName);
+            String newFileName = null;
             try {
                 if (extension.equals("xlsx") || extension.equals("xls") || extension.equals("csv")) {
-                    //        여기서 파일 변환 후 업데이트하자
-                    String newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
+                    newFileName = ((int) Math.floor(Math.random() * 100000 + 1)) + fileName;
                     String uploadName = fileService.rename(file, newFileName);
 
                     fileDataVO.setTempFileName(uploadName);
@@ -80,14 +80,14 @@ public class FileController {
                     fileService.excelDataUpload(fileDataVO);
                     throw new Exception("엑셀파일 및 csv파일을 업로드 해주세요.");
                 }
+                fileService.excelUpload(newFileName);
             }catch (DuplicateKeyException e){
                 // ignore
+            }catch (NullPointerException e){
+                e.printStackTrace();
             }catch (Exception e){
                 e.printStackTrace();
             }
-
-
-
 
 //        임시파일 정보 추가
 //            fileService.tempFileNameAdd(fileDataVO);

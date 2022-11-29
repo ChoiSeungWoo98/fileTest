@@ -1,12 +1,13 @@
 package com.example.fileupload.file;
 
-import com.example.fileupload.polymorphism.Csv;
-import com.example.fileupload.polymorphism.Excel;
-import com.example.fileupload.polymorphism.FileParents;
+import com.example.fileupload.polymorphism.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,11 +30,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @Qualifier("file")
 @Primary
+@Slf4j
 public class FileServiceImpl implements FileService {
 
     @Resource
-    ApplicationContext context;
-
+    CsvUploader csvUploader;
+    @Resource
+    UserUploadInternalService userUploadService;
+    @Resource
+    HelperPersonalInfoUploadInternalService helperPersonalInfoUploadService;
+    @Resource
+    HelperAnymanInfoUploadService helperAnymanInfoUploadService;
+    @Resource
+    MissionInfoUploadService missionInfoUploadService;
+    @Resource
+    ReviewInfoUploadService reviewInfoUploadService;
     private final FileMapper fileMapper;
     private final String  DATA_DIRECTORY = "C:\\Temp";
 
@@ -40,43 +52,90 @@ public class FileServiceImpl implements FileService {
         public UserVO[] excelUpload(String tempFileName){
             String fileType = FilenameUtils.getExtension(tempFileName);
             FileDataVO fileDataVO = new FileDataVO();
-            FileParents fileParents = null;
 
-
+            boolean fileCheck = true;
             if(fileType.equals("xlsx") || fileType.equals("xls")){
-                fileParents = new Excel(context.getBean(FileMapper.class));
+                fileCheck = false;
+//                String extension = FilenameUtils.getExtension(tempFileName);
+                Workbook workbook = null;
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(DATA_DIRECTORY + File.separator + tempFileName);
+                    workbook = fileType.equals("xlsx")
+                            ? new XSSFWorkbook(fileInputStream)
+                            : new HSSFWorkbook(fileInputStream);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (Exception e){
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+
+                workbook.getAllNames().forEach(name -> {
+                    String sheetName = name.getSheetName();
+                    FileParents fileParents = null;
+                    switch (sheetName){
+                        case "회원 정보":
+//                            List<UserVO> userList = userUploadService.fileDataGet(tempFileName);
+//                            sucessedFileUpdate(userList, tempFileName, sheetName);
+//                            fileMapper.excelUpload(userList);
+                            break;
+                        case "헬퍼 개인정보":
+//                            List<HelperVO> helperList = helperPersonalInfoUploadService.fileDataGet(tempFileName);
+//                            sucessedFileUpdate(helperList, tempFileName, sheetName);
+//                            fileMapper.helperUpload(helperList);
+                            break;
+                        case "헬퍼 애니맨정보":
+//                            List<HelperAnymanInfoVO> helperAnymanList = helperAnymanInfoUploadService.fileDataGet(tempFileName);
+//                            sucessedFileUpdate(helperAnymanList, tempFileName, sheetName);
+//                            fileMapper.helperAnymanUpload(helperAnymanList);
+                            break;
+                        case "미션 정보":
+//                            List<MissionInfoVO> missionInfoVOList = missionInfoUploadService.fileDataGet(tempFileName);
+//                            sucessedFileUpdate(missionInfoVOList, tempFileName, sheetName);
+//                            fileMapper.missionUpload(missionInfoVOList);
+                            break;
+                        case "리뷰 정보":
+                            List<ReviewInfoVO> reviewInfoVOList = reviewInfoUploadService.fileDataGet(tempFileName);
+                            sucessedFileUpdate(reviewInfoVOList, tempFileName, sheetName);
+                            fileMapper.reviewUpload(reviewInfoVOList);
+                            break;
+                        default:
+
+                    }
+                });
+//                fileParents = new Excel(context.getBean(FileMapper.class));
             }else if(fileType.equals("csv")) {
-                fileParents = new Csv(context.getBean(FileMapper.class));
+                fileCheck = false;
+                FileParents fileParents = null;
             }
-            if (fileParents == null) {
+            if (fileCheck) {
                 // 처리 불가능 타입
             }
-            List<UserVO> dataList = fileParents.fileDataGet(tempFileName);
-            fileDataVO.setTempFileName(tempFileName);
 
-            try {
-                if(!dataList.isEmpty()){
-                    Date now = new Date();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String nowTime = simpleDateFormat.format(now);
-                    fileDataVO.setFileProcessedAt(nowTime);
-                    fileDataVO.setOperationStatus("sucessed");
-                    fileDataVO.setConsequence("성공");
-                    fileDataVO.setTotaldataCount(dataList.size());
-                    fileMapper.excelDataUpdate(fileDataVO);
-                    fileMapper.excelUpload(dataList);
-//                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
-//                    if(deleteFile.exists()){
-////                        deleteFile.deleteOnExit();
-//                        deleteFile.delete();
-//                    }
-                }
-            } catch (DuplicateKeyException e) {
-                // ignore
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            return fileMapper.showUser(dataList);
+//            fileDataVO.setTempFileName(tempFileName);
+//            try {
+//                if(!fileCheck){
+//                    Date now = new Date();
+//                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//                    String nowTime = simpleDateFormat.format(now);
+//                    fileDataVO.setFileProcessedAt(nowTime);
+//                    fileDataVO.setOperationStatus("sucessed");
+//                    fileDataVO.setConsequence("성공");
+//                    fileDataVO.setTotaldataCount(dataList.size());
+//                    fileMapper.excelDataUpdate(fileDataVO);
+//
+////                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
+////                    if(deleteFile.exists()){
+//////                        deleteFile.deleteOnExit();
+////                        deleteFile.delete();
+////                    }
+//                }
+//            } catch (DuplicateKeyException e) {
+//                // ignore
+//            } catch (Exception e){
+//                e.printStackTrace();
+//            }
+            return /*fileMapper.showUser(dataList)*/null;
         }
     @Override
     public void excelDataUpload(FileDataVO fileDataVO) { fileMapper.excelDataUpload(fileDataVO); }
@@ -87,9 +146,31 @@ public class FileServiceImpl implements FileService {
     @Override
     public String getFileOriginalNameAndType(String fileName) { return fileMapper.getFileOriginalNameAndType(fileName); }
 
+    private <T> void sucessedFileUpdate(List<T> dataList, String tempFileName, String division) {
+        FileDataVO fileDataVO = new FileDataVO();
+        fileDataVO.setTempFileName(tempFileName);
+        try {
+            Date now = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowTime = simpleDateFormat.format(now);
+            fileDataVO.setFileProcessedAt(nowTime);
+            fileDataVO.setFileDivision(division);
+            fileDataVO.setOperationStatus("sucessed");
+            fileDataVO.setConsequence("성공");
+            fileDataVO.setTotaldataCount(fileDataVO.getTotaldataCount() + dataList.size());
+            fileMapper.excelDataUpdate(fileDataVO);
 
-
-
+//                    File deleteFile = new File(DATA_DIRECTORY + File.separator + fileName);
+//                    if(deleteFile.exists()){
+////                        deleteFile.deleteOnExit();
+//                        deleteFile.delete();
+//                    }
+        } catch (DuplicateKeyException e) {
+            // ignore
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
     public File[] allFileGet(String type){
         File dir = new File(DATA_DIRECTORY);

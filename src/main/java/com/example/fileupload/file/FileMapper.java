@@ -6,11 +6,18 @@ import java.util.List;
 
 @Mapper
 public interface FileMapper {
-    void excelUpload(List<UserVO> UserVOS);
+    void excelUpload(List<UserVO> userVOS);
+    void helperUpload(List<HelperVO> helperVOS);
+    void helperAnymanUpload(List<HelperAnymanInfoVO> helperAnymanInfoVOS);
+    void missionUpload(List<MissionInfoVO> missionInfoVOS);
+    void reviewUpload(List<ReviewInfoVO> reviewInfoVOS);
     void excelDataUpdate(FileDataVO fileDataVO);
     String userKeyCheck(UserVO userVO);
     String helperKeyCheck(HelperVO helperVO);
-    UserVO[] showUser(List<UserVO> userVOS);
+    String helperAnymanKeyCheck(HelperAnymanInfoVO helperAnymanInfoVO);
+    String missionKeyCheck(MissionInfoVO missionInfoVO);
+    String reviewKeyCheck(ReviewInfoVO reviewInfoVO);
+//    UserVO[] showUser(List<UserVO> userVOS);
     void tempFileNameAdd(FileDataVO fileDataVO);
     String[] getWaitingTempFile();
     void excelDataUpload(FileDataVO fileDataVO);

@@ -20,14 +20,9 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class Excel implements FileParents {
+public class UserUploadInternalService implements FileParents {
     @Resource
     FileMapper fileMapper;
-
-
-    public Excel(FileMapper fileMapper) {
-        this.fileMapper = fileMapper;
-    }
 
     @Override
     public List<UserVO> fileDataGet(String tempFileName)  {
@@ -58,23 +53,25 @@ public class Excel implements FileParents {
 //                String phoneNum = convertTelNo(originalPhone);
 
 //                if (phoneNum.equals("failed")){ telNumFail.add(originalPhone); }
-                UserVO data = new UserVO();
-                if(!(row.getCell(0) == null)){
-                    data.setUserCi(row.getCell(0).getStringCellValue());
-                }
-                data.setUserId((int) row.getCell(1).getNumericCellValue());
-                if(!(row.getCell(2) == null)){
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    String cal = simpleDateFormat.format(row.getCell(2).getDateCellValue());
-                    data.setUserWithdrewDatetime(cal);
-                }
-                data.setUserIsServiceBlocked(row.getCell(3).getBooleanCellValue());
-                data.setUserIsActive(row.getCell(4).getBooleanCellValue());
+                if(row.getRowNum() != 0){
+                    UserVO data = new UserVO();
+                    if(!(row.getCell(0) == null)){
+                        data.setUserCi(row.getCell(0).getStringCellValue());
+                    }
+                    data.setUserId((int) row.getCell(1).getNumericCellValue());
+                    if(!(row.getCell(2) == null)){
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String cal = simpleDateFormat.format(row.getCell(2).getDateCellValue());
+                        data.setUserWithdrewDatetime(cal);
+                    }
+                    data.setUserIsServiceBlocked(row.getCell(3).getBooleanCellValue());
+                    data.setUserIsActive(row.getCell(4).getBooleanCellValue());
 
-                String overId = fileMapper.userKeyCheck(data);
-                if(overId != null){ overName.add(overId); }
+                    String overId = fileMapper.userKeyCheck(data);
+                    if(overId != null){ overName.add(overId); }
 
-                dataList.add(data);
+                    dataList.add(data);
+                }
             } catch (NullPointerException e){
                 e.printStackTrace();
             }catch (Exception e){

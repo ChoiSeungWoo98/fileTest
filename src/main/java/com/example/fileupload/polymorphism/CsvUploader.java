@@ -4,20 +4,17 @@ import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
 import com.example.fileupload.file.UserVO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 @Slf4j
-public class Csv implements FileParents {
+@Service
+public class CsvUploader implements FileParents {
     @Resource
     FileMapper fileMapper;
-
-
-    public Csv(FileMapper fileMapper) {
-        this.fileMapper = fileMapper;
-    }
 
     @Override
     public List<UserVO> fileDataGet(String tempFileName) {
