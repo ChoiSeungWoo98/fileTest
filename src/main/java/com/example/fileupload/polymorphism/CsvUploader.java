@@ -17,7 +17,7 @@ public class CsvUploader implements FileParents {
     FileMapper fileMapper;
 
     @Override
-    public List<UserVO> fileDataGet(String tempFileName) {
+    public List<UserVO> fileDataGet(String tempFileName, int sheetIndex) {
         //반환용 리스트
         List<UserVO> dataList = new ArrayList<>();
         ArrayList<String> telNumFail = new ArrayList<>();

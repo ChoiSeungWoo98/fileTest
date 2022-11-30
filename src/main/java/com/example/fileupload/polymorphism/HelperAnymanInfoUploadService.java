@@ -7,6 +7,7 @@ import com.example.fileupload.file.HelperVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class HelperAnymanInfoUploadService {
     FileMapper fileMapper;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
 
-    public List<HelperAnymanInfoVO> fileDataGet(String tempFileName) {
+    public List<HelperAnymanInfoVO> fileDataGet(String tempFileName, int sheetIndex) {
         ArrayList<String> overName = new ArrayList<>();
         List<HelperAnymanInfoVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
@@ -47,14 +48,16 @@ public class HelperAnymanInfoUploadService {
             e.printStackTrace();
         }
 
-        workbook.getSheetAt(2).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
                 if(row.getRowNum() != 0){
                     HelperAnymanInfoVO helperAnymanInfoVO = new HelperAnymanInfoVO();
                     helperAnymanInfoVO.setHelperAnymanCi(row.getCell(0).getStringCellValue());
                     helperAnymanInfoVO.setHelperAnymanUserId((int) row.getCell(1).getNumericCellValue());
                     helperAnymanInfoVO.setHelperAnymanHelperId((int) row.getCell(2).getNumericCellValue());
-                    helperAnymanInfoVO.setHelperAnymanUserName(row.getCell(3).getStringCellValue());
+                    if(!(row.getCell(3) == null)){
+                        helperAnymanInfoVO.setHelperAnymanUserName(String.valueOf(row.getCell(3).getCellStyle()));
+                    }
                     helperAnymanInfoVO.setHelperAnymanProfilePhoto(row.getCell(4).getStringCellValue());
                     helperAnymanInfoVO.setHelperAnymanLicenses(row.getCell(5).getStringCellValue());
                     helperAnymanInfoVO.setHelperAnymanExperience(row.getCell(6).getStringCellValue());

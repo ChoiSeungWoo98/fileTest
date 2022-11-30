@@ -26,7 +26,7 @@ public class UserExcel implements FileParents {
         this.fileMapper = fileMapper;
     }
     @Override
-    public List<UserVO> fileDataGet(String tempFileName) {
+    public List<UserVO> fileDataGet(String tempFileName, int sheetIndex) {
 //        ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
         List<UserVO> dataList = new ArrayList<>();
@@ -47,7 +47,7 @@ public class UserExcel implements FileParents {
             e.printStackTrace();
         }
 
-        workbook.getSheetAt(0).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
                 UserVO data = new UserVO();
                 if(!(row.getCell(0) == null)){

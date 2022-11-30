@@ -26,7 +26,7 @@ public class ReviewInfoUploadService {
     FileMapper fileMapper;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
 
-    public List<ReviewInfoVO> fileDataGet(String tempFileName) {
+    public List<ReviewInfoVO> fileDataGet(String tempFileName, int sheetIndex) {
         ArrayList<String> overName = new ArrayList<>();
         List<ReviewInfoVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
@@ -45,7 +45,7 @@ public class ReviewInfoUploadService {
         } catch (Exception e){
             e.printStackTrace();
         }
-        workbook.getSheetAt(1).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
                 if(row.getRowNum() != 0){
                     ReviewInfoVO reviewInfoVO = new ReviewInfoVO();

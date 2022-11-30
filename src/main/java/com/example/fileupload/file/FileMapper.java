@@ -15,7 +15,6 @@ public interface FileMapper {
     String userKeyCheck(UserVO userVO);
     String helperKeyCheck(HelperVO helperVO);
     String helperAnymanKeyCheck(HelperAnymanInfoVO helperAnymanInfoVO);
-    String missionKeyCheck(MissionInfoVO missionInfoVO);
     String reviewKeyCheck(ReviewInfoVO reviewInfoVO);
 //    UserVO[] showUser(List<UserVO> userVOS);
     void tempFileNameAdd(FileDataVO fileDataVO);
@@ -23,4 +22,5 @@ public interface FileMapper {
     void excelDataUpload(FileDataVO fileDataVO);
     String getFileOriginalNameAndType(String fileName);
     String[] getSucessFileDelete();
+    void sheetUpload(SheetVO sheetVO);
 }

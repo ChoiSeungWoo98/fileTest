@@ -8,6 +8,6 @@ import java.util.List;
 public interface FileParents {
     final int TEL_CEL_NUMBER = 4;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
-    List<UserVO> fileDataGet(String fileName);
+    List<UserVO> fileDataGet(String fileName, int sheetIndex);
 }
 

@@ -31,7 +31,7 @@ public class HelperPersonalInfoUploadInternalService {
 //        this.fileMapper = fileMapper;
 //    }
 
-    public List<HelperVO> fileDataGet(String tempFileName) {
+    public List<HelperVO> fileDataGet(String tempFileName, int sheetIndex) {
         ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
         List<HelperVO> dataList = new ArrayList<>();
@@ -52,7 +52,7 @@ public class HelperPersonalInfoUploadInternalService {
             e.printStackTrace();
         }
 
-        workbook.getSheetAt(1).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
                 if(row.getRowNum() != 0){
                     row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));

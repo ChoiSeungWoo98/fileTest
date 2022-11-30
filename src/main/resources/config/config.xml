@@ -8,5 +8,6 @@
         <typeAlias type="com.example.fileupload.file.HelperAnymanInfoVO" alias="HelperAnymanInfoVO"/>
         <typeAlias type="com.example.fileupload.file.MissionInfoVO" alias="MissionInfoVO"/>
         <typeAlias type="com.example.fileupload.file.ReviewInfoVO" alias="ReviewInfoVO"/>
+        <typeAlias type="com.example.fileupload.file.SheetVO" alias="SheetVO"/>
     </typeAliases>
 </configuration>

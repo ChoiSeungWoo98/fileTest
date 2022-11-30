@@ -26,7 +26,7 @@ public class MissionInfoUploadService {
     FileMapper fileMapper;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
 
-    public List<MissionInfoVO> fileDataGet(String tempFileName) {
+    public List<MissionInfoVO> fileDataGet(String tempFileName, int sheetIndex) {
         ArrayList<String> overName = new ArrayList<>();
         List<MissionInfoVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
@@ -46,7 +46,7 @@ public class MissionInfoUploadService {
             e.printStackTrace();
         }
 
-        workbook.getSheetAt(0).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
                 if(row.getRowNum() != 0){
                     MissionInfoVO missionInfoVo = new MissionInfoVO();
@@ -83,13 +83,6 @@ public class MissionInfoUploadService {
                     missionInfoVo.setMissionHelperId((int) row.getCell(13).getNumericCellValue());
                     missionInfoVo.setMissionBidAmount((int) row.getCell(14).getNumericCellValue());
                     missionInfoVo.setMissionFee((int) row.getCell(15).getNumericCellValue());
-
-
-
-                    
-
-                    String overId = fileMapper.missionKeyCheck(missionInfoVo);
-                    if(overId != null){ overName.add(overId); }
 
                     dataList.add(missionInfoVo);
                 }

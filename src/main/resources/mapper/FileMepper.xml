@@ -113,12 +113,17 @@
                #{fileSize}, #{uploader}, #{operationStatus}, #{consequence}, #{tempFileName}, #{tempFileNameOrigin})
     </insert>
 
+    <insert id="sheetUpload">
+        INSERT INTO tbl_sheet_info
+        (sheet_type, sheet_file_name, sheet_count, sheet_status)
+        VALUES(#{sheetType},#{sheetFileName},#{sheetCount},#{sheetStatus})
+    </insert>
+
     <select id="userKeyCheck" parameterType="UserVO" resultType="string">
         SELECT user_id
         FROM tbl_user
         WHERE user_id = #{userId}
     </select>
-
 
     <select id="helperKeyCheck" parameterType="HelperVO" resultType="string">
         SELECT helper_id
@@ -130,15 +135,10 @@
         FROM tbl_helper_anyman_info
         WHERE helper_anyman_helper_id = #{helperAnymanHelperId}
     </select>
-    <select id="missionKeyCheck" parameterType="MissionInfoVO" resultType="string">
-        SELECT mission_user_id
-        FROM tbl_mission_info
-        WHERE mission_user_id = #{missionUserId}
-    </select>
     <select id="reviewKeyCheck" parameterType="ReviewInfoVO" resultType="string">
-        SELECT review_helper_id
+        SELECT review_bid_id
         FROM tbl_review_info
-        WHERE review_helper_id = #{reviewHelperId}
+        WHERE review_bid_id = #{reviewBidId}
     </select>
 
 

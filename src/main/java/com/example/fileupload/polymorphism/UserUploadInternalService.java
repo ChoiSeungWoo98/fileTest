@@ -25,7 +25,7 @@ public class UserUploadInternalService implements FileParents {
     FileMapper fileMapper;
 
     @Override
-    public List<UserVO> fileDataGet(String tempFileName)  {
+    public List<UserVO> fileDataGet(String tempFileName, int sheetIndex)  {
         ArrayList<String> telNumFail = new ArrayList<>();
         ArrayList<String> overName = new ArrayList<>();
         List<UserVO> dataList = new ArrayList<>();
@@ -46,7 +46,7 @@ public class UserUploadInternalService implements FileParents {
             e.printStackTrace();
         }
 
-        workbook.getSheetAt(0).forEach( row -> {
+        workbook.getSheetAt(sheetIndex).forEach( row -> {
             try {
 //                row.getCell(TEL_CEL_NUMBER).setCellFormula(String.valueOf(row.getCell(TEL_CEL_NUMBER)));
 //                String originalPhone = "0" + row.getCell(TEL_CEL_NUMBER);

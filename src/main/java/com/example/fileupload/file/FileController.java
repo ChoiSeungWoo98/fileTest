@@ -36,14 +36,6 @@ public class FileController {
 
             FileDataVO fileDataVO = new FileDataVO();
             String fileType = fileName.substring(fileName.lastIndexOf(".")+1);
-            
-//        이거는 파일을 구분하기 위함(임의로 랜덤으로 뽑게 만듦 추후에 바꿔야함)
-            Random r = new Random();
-            int ran = r.nextInt(4);
-//            fileDivisions fileDivision;
-//            switch (ran){case 0: fileDivision = fileDivisions.애니맨_회원; break; case 1: fileDivision = fileDivisions.헬퍼_전환; break; case 2: fileDivision = fileDivisions.헬퍼_정보; break; case 3: fileDivision = fileDivisions.미션_정보; break; case 4: fileDivision = fileDivisions.피드백_정보; break; default: fileDivision = null;}
-//            fileDataVO.setFileDivision(String.valueOf(fileDivision));
-
 
             fileDataVO.setFileName(fileName);
             fileDataVO.setFileType(fileType);
@@ -89,8 +81,6 @@ public class FileController {
                 e.printStackTrace();
             }
 
-//        임시파일 정보 추가
-//            fileService.tempFileNameAdd(fileDataVO);
         });
 
 
