@@ -138,6 +138,13 @@
         FROM tbl_helper
         WHERE helper_id = #{helperId}
     </select>
+
+    <select id="waitingFileSelect" resultType="SheetVO">
+        SELECT *
+        FROM tbl_sheet_info
+        WHERE sheet_status = '성공'
+    </select>
+
     <select id="helperAnymanKeyCheck" parameterType="HelperAnymanInfoVO" resultType="string">
         SELECT helper_anyman_helper_id
         FROM tbl_helper_anyman_info

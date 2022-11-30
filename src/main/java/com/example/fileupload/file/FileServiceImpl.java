@@ -7,7 +7,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,31 +85,26 @@ public class FileServiceImpl implements FileService {
                             List<UserVO> userList = userUploadService.fileDataGet(tempFileName, name.getSheetIndex());
                             sucessedFileUpdate(userList, tempFileName, sheetName);
                             sheetVO.setSheetCount(userList.size());
-//                            fileMapper.excelUpload(userList);
                             break;
                         case "헬퍼 개인정보":
-//                            List<HelperVO> helperList = helperPersonalInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
-//                            sucessedFileUpdate(helperList, tempFileName, sheetName);
-//                            sheetVO.setSheetCount(helperList.size());
-//                            fileMapper.helperUpload(helperList);
+                            List<HelperVO> helperList = helperPersonalInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
+                            sucessedFileUpdate(helperList, tempFileName, sheetName);
+                            sheetVO.setSheetCount(helperList.size());
                             break;
                         case "헬퍼 애니맨정보":
-//                            List<HelperAnymanInfoVO> helperAnymanList = helperAnymanInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
-//                            sucessedFileUpdate(helperAnymanList, tempFileName, sheetName);
-//                            sheetVO.setSheetCount(helperAnymanList.size());
-//                            fileMapper.helperAnymanUpload(helperAnymanList);
+                            List<HelperAnymanInfoVO> helperAnymanList = helperAnymanInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
+                            sucessedFileUpdate(helperAnymanList, tempFileName, sheetName);
+                            sheetVO.setSheetCount(helperAnymanList.size());
                             break;
                         case "미션 정보":
-//                            List<MissionInfoVO> missionInfoVOList = missionInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
-//                            sucessedFileUpdate(missionInfoVOList, tempFileName, sheetName);
-//                            sheetVO.setSheetCount(missionInfoVOList.size());
-//                            fileMapper.missionUpload(missionInfoVOList);
+                            List<MissionInfoVO> missionInfoVOList = missionInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
+                            sucessedFileUpdate(missionInfoVOList, tempFileName, sheetName);
+                            sheetVO.setSheetCount(missionInfoVOList.size());
                             break;
                         case "리뷰 정보":
-//                            List<ReviewInfoVO> reviewInfoVOList = reviewInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
-//                            sucessedFileUpdate(reviewInfoVOList, tempFileName, sheetName);
-//                            sheetVO.setSheetCount(reviewInfoVOList.size());
-//                            fileMapper.reviewUpload(reviewInfoVOList);
+                            List<ReviewInfoVO> reviewInfoVOList = reviewInfoUploadService.fileDataGet(tempFileName, name.getSheetIndex());
+                            sucessedFileUpdate(reviewInfoVOList, tempFileName, sheetName);
+                            sheetVO.setSheetCount(reviewInfoVOList.size());
                             break;
                         default:
                     }
@@ -124,6 +123,7 @@ public class FileServiceImpl implements FileService {
             }
 
             return /*fileMapper.showUser(dataList)*/null;
+
         }
     @Override
     public void excelDataUpload(FileDataVO fileDataVO) { fileMapper.excelDataUpload(fileDataVO); }
@@ -133,6 +133,48 @@ public class FileServiceImpl implements FileService {
     public String[] getWaitingTempFile() { return fileMapper.getWaitingTempFile(); }
     @Override
     public String getFileOriginalNameAndType(String fileName) { return fileMapper.getFileOriginalNameAndType(fileName); }
+    @Override
+    public SheetVO[] waitingFileSelect(){ return fileMapper.waitingFileSelect();}
+    @Override
+    public void fileupload(SheetVO[] sheetVOS){
+            for (int i = 0;i < sheetVOS.length ;i++){
+                String fileData = sheetVOS[i].getSheetData();
+                JSONObject jObject = null;
+                try {
+                    jObject= new JSONObject(fileData);
+                    switch (sheetVOS[i].getSheetType()){
+                        case "헬퍼 개인정보":
+                            List<HelperVO> helperVO = new ArrayList<>();
+                            // 이런식으로 작성 (반복은 어떻게 할 것인가 생각해야함)
+                            helperVO.setHelperCi(jObject.getString("Ci"));
+                            fileMapper.excelUpload(userList);
+                            break;
+                        case "회원 정보":
+                            fileMapper.helperUpload(helperList);
+                            break;
+                        case "헬퍼 애니맨정보":
+                            fileMapper.helperAnymanUpload(helperAnymanList);
+                            break;
+                        case "미션 정보":
+                            fileMapper.missionUpload(missionInfoVOList);
+                            break;
+                        case "리뷰 정보":
+                            fileMapper.reviewUpload(reviewInfoVOList);
+                            break;
+                        default:
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+//                String title = jObject.getString("title");
+//                String url = jObject.getString("url");
+//                Boolean draft = jObject.getBoolean("draft");
+//                int star = jObject.getInt("star");
+
+            }
+
+    }
 
     private <T> void sucessedFileUpdate(List<T> dataList, String tempFileName, String division) {
         FileDataVO fileDataVO = new FileDataVO();

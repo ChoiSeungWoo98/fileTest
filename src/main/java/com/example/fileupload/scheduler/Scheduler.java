@@ -1,6 +1,7 @@
 package com.example.fileupload.scheduler;
 
 import com.example.fileupload.file.FileService;
+import com.example.fileupload.file.SheetVO;
 import com.example.fileupload.file.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,13 +9,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class Scheduler {
     private final FileService fileService;
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(initialDelay = 5000,fixedDelay = 5000)
     private void scheduleTask() {
 //        String[] waitingFile = fileService.getWaitingTempFile();
 
@@ -24,6 +27,9 @@ public class Scheduler {
 //        }
 //        fileService.tempFileDelete();
 //        fileService.sucessFileDelete();
+        SheetVO[] sheetVOList = fileService.waitingFileSelect();
+        fileService.fileupload(sheetVOList);
+
         log.info("Fixed delay task - {}", System.currentTimeMillis() / 1000);
         log.info("5초 후 실행 => time : " + LocalTime.now());
 
