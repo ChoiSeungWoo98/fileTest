@@ -23,4 +23,5 @@ public interface FileMapper {
     String getFileOriginalNameAndType(String fileName);
     String[] getSucessFileDelete();
     void sheetUpload(SheetVO sheetVO);
+    void sheetUpdate(SheetVO sheetVO);
 }

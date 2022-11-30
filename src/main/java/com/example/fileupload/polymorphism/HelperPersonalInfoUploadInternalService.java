@@ -3,6 +3,9 @@ package com.example.fileupload.polymorphism;
 import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
 import com.example.fileupload.file.HelperVO;
+import com.example.fileupload.file.SheetVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -23,6 +26,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class HelperPersonalInfoUploadInternalService {
     @Resource
+    ObjectMapper objectMapper;
+    @Resource
     FileMapper fileMapper;
     final int TEL_CEL_NUMBER = 4;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
@@ -36,6 +41,10 @@ public class HelperPersonalInfoUploadInternalService {
         ArrayList<String> overName = new ArrayList<>();
         List<HelperVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
+
+        SheetVO sheetVO = new SheetVO();
+        sheetVO.setSheetFileName(tempFileName.substring(5));
+        sheetVO.setSheetStatus("대기");
 
         String extension = FilenameUtils.getExtension(tempFileName);
 
@@ -97,6 +106,7 @@ public class HelperPersonalInfoUploadInternalService {
                 fileDataVO.setOperationStatus("failed");
                 fileDataVO.setTempFileName(tempFileName);
                 fileMapper.excelDataUpdate(fileDataVO);
+                sheetVO.setSheetStatus("실패.. 전화번호 형식이 잘못 되었습니다." + telNumFail);
                 dataList.clear();
                 throw new Exception("전화번호 형식이 잘못 되었습니다.");
             }
@@ -105,12 +115,23 @@ public class HelperPersonalInfoUploadInternalService {
                 fileDataVO.setOperationStatus("failed");
                 fileDataVO.setTempFileName(tempFileName);
                 fileMapper.excelDataUpdate(fileDataVO);
+                sheetVO.setSheetStatus("실패.. 중복 데이터가 있습니다." + overName);
                 dataList.clear();
                 throw new Exception("중복 데이터가 있습니다.");
             }
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        sheetVO.setSheetCount(dataList.size());
+        String json = "";
+        try {
+            json = objectMapper.writeValueAsString(dataList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        sheetVO.setSheetData(json);
+        fileMapper.sheetUpload(sheetVO);
         return dataList;
     }
 

@@ -1,16 +1,15 @@
 package com.example.fileupload.file;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,15 +18,15 @@ import java.util.Random;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/excel/*")
+@RequestMapping("/excel")
 @Slf4j
 public class FileController {
-//    enum fileDivisions{애니맨_회원, 헬퍼_전환, 헬퍼_정보, 미션_정보, 피드백_정보}
-////    enum fileDivisions{ANYMAN_MEMBER, HELPER_CONVERSION, HELPER_INFORMATION, MISSION_INFORMATION, FEEDBACK_INFORMATION}
     private final FileService fileService;
     @PostMapping("/read")
-    private String readExcel(/*@RequestParam("file") MultipartFile file*/MultipartHttpServletRequest mRequest) {
-        List<MultipartFile> files = mRequest.getFiles("file");
+            //,consumes = {"multipart/form-data"}
+    //private String readExcel(/*@RequestParam("file") MultipartFile file*/@RequestParam(value = "file") MultipartHttpServletRequest mRequest) {
+        public String readExcel(MultipartRequest multipartRequest) {
+        List<MultipartFile> files = multipartRequest.getFiles("file");
         files.forEach(file -> {
             Date now = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

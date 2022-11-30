@@ -19,14 +19,13 @@ spring:
       jdbc-url: jdbc:mysql://localhost:3306/excelFile?zuseUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
       username: root
       password: 1234
+
 server:
   port: 8090
 
 logging:
   level:
     sql: OFF
-
-
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

@@ -115,9 +115,17 @@
 
     <insert id="sheetUpload">
         INSERT INTO tbl_sheet_info
-        (sheet_type, sheet_file_name, sheet_count, sheet_status)
-        VALUES(#{sheetType},#{sheetFileName},#{sheetCount},#{sheetStatus})
+        (sheet_file_name, sheet_count, sheet_status, sheet_data)
+        VALUES(#{sheetFileName}, #{sheetCount}, #{sheetStatus}, #{sheetData})
     </insert>
+
+    <update id="sheetUpdate">
+        UPDATE tbl_sheet_info
+        SET sheet_type = #{sheetType},
+            sheet_file_name = #{sheetFileName},
+            sheet_status = #{sheetStatus}
+        WHERE sheet_file_name = #{sheetFileName} AND sheet_type IS NULL
+    </update>
 
     <select id="userKeyCheck" parameterType="UserVO" resultType="string">
         SELECT user_id

@@ -2,8 +2,10 @@ package com.example.fileupload.polymorphism;
 
 import com.example.fileupload.file.FileDataVO;
 import com.example.fileupload.file.FileMapper;
-import com.example.fileupload.file.MissionInfoVO;
 import com.example.fileupload.file.ReviewInfoVO;
+import com.example.fileupload.file.SheetVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -24,12 +26,18 @@ import java.util.List;
 public class ReviewInfoUploadService {
     @Resource
     FileMapper fileMapper;
+    @Resource
+    ObjectMapper objectMapper;
     final String  DATA_DIRECTORY = "C:"+ File.separator+"Temp";
 
     public List<ReviewInfoVO> fileDataGet(String tempFileName, int sheetIndex) {
         ArrayList<String> overName = new ArrayList<>();
         List<ReviewInfoVO> dataList = new ArrayList<>();
         FileDataVO fileDataVO = new FileDataVO();
+
+        SheetVO sheetVO = new SheetVO();
+        sheetVO.setSheetFileName(tempFileName.substring(5));
+        sheetVO.setSheetStatus("대기");
 
         String extension = FilenameUtils.getExtension(tempFileName);
 
@@ -86,12 +94,26 @@ public class ReviewInfoUploadService {
                 fileDataVO.setOperationStatus("failed");
                 fileDataVO.setTempFileName(tempFileName);
                 fileMapper.excelDataUpdate(fileDataVO);
+                sheetVO.setSheetStatus("실패.. 중복 데이터가 있습니다." + overName);
                 dataList.clear();
                 throw new Exception("중복 데이터가 있습니다.");
             }
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        sheetVO.setSheetCount(dataList.size());
+        String json = "";
+        try {
+            json = objectMapper.writeValueAsString(dataList);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        sheetVO.setSheetData(json);
+
+
+        fileMapper.sheetUpload(sheetVO);
+
         return dataList;
     }
 
